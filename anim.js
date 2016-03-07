@@ -216,11 +216,11 @@ function init() {
 	shadowDir = 0;
 	var homeRect = document.getElementById("home").getBoundingClientRect();
 	var homeX = (homeRect.left + homeRect.width / 2)/ xUnit;
-	alert(homeX);
+	//alert(homeX);
 	homeSeries = new LineSeries(new Point(homeX * xUnit, 2.6 * yUnit));
 	homeSeries.append(new Point(homeX * xUnit, 70 * yUnit));
-	homeSeries.append(new Point(1.465 * homeX * xUnit, 70 * yUnit + 4 * xUnit));
-	homeSeries.append(new Point(2.2955 * homeX * xUnit, 70 * yUnit + 4 * xUnit));
+	homeSeries.append(new Point(1.465 * homeX * xUnit, 70 * yUnit + .465 * homeX * xUnit));
+	homeSeries.append(new Point(2.2955 * homeX * xUnit, 70 * yUnit + .465 * homeX * xUnit));
 
 	aboutSeries = new LineSeries(new Point(20 * xUnit, 2.6 * yUnit));
 	aboutSeries.append(new Point(20 * xUnit, 10 * yUnit));

@@ -34,7 +34,7 @@ body {
 	color: white;
 	font-family: CodeB;
 	letter-spacing: 8px;
-	font-size: 250%;
+	font-size: 2vw;
 	min-height: 5%;
 
 }
@@ -43,7 +43,7 @@ body {
 	padding-top:1%;
 	min-height: 5%;
 	width: 100%;
-	font-size: 200%;
+	font-size: 1.7vw;
 	background-color: #ffff00;
 }
 
