@@ -26,7 +26,7 @@ body {
 	padding-top: 1em;
 	padding-bottom:0%;
 	min-height: 10%;
-	background-color: #ff0000;
+	background-color: #34323A;
 	
 }
 
@@ -48,7 +48,7 @@ body {
 	min-height: 5%;
 	width: 100%;
 	font-size: 200%;
-	background-color: #ffff00;
+	background-color: #6D6A76;
 }
 
 @media only screen and (max-width: 768px){.page-top nav#page-nav {padding-top:2.5%;min-height:3.5%;}}
@@ -75,7 +75,7 @@ body {
 }
 
 .page-top nav#page-nav ul li .nav-button:hover{
-	color: gray;
+	color: white;
 	cursor: pointer;
 }
 
@@ -115,5 +115,5 @@ body {
 	padding: 0;
 	margin: 0;
 	min-height: 15%;
-	background-color: #0000ff;
+	background-color: black;
 }

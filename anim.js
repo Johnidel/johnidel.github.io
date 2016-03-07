@@ -150,7 +150,7 @@ function update() {
 	if(animSelect != 0)
 	{
 		animLink[animSelect - 1].update();
-		drawLineSeries(context, animLink[animSelect - 1].curLineSeries, "cyan");
+		drawLineSeries(context, animLink[animSelect - 1].curLineSeries, "#00E1FF");
 	}
 
 	t = t + 1;
@@ -189,7 +189,7 @@ function drawLineSeries(context, series, color) {
 		context.lineTo(series.p[i].x, series.p[i].y);
 	}
 	context.strokeStyle = color;
-	if(color == "cyan")
+	if(color == "#00E1FF")
 	{
 		
 		context.shadowBlur = shadowVal;
