@@ -2,20 +2,25 @@
 
 <link rel="stylesheet" type="text/css" href="style.css">
 
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
 </head>
 
-<body>
+<body onload="init_canvas();">
 	<div class="page-top">
-		<div class="title">John Ivan Delaney</div>
+		<div id="title" class="title">John Ivan Delaney</div>
 		<nav id="page-nav">
 			<ul>
-				<li> <a href=""> Home</a></li>
-				<li> <a href=""> About Me</a></li>
-				<li> <a href=""> Projects</a></li>
-				<li> <a href=""> Contact</a></li>
+				<li> <div class="nav-button" id="home">Home</div></li>
+				<li> <div class="nav-button" id="about"> About Me</div></li>
+				<li> <div class="nav-button" id="projects"> Projects</div></li>
+				<li> <div class="nav-button" id="contact"> Contact</div></li>
 			</ul>
 		</nav>
 	</div>
-<div class="content"></div>
+<canvas id="main_canvas"></canvas>
+<script src="anim.js"></script>
 <div class="footer"></div>
+
 </body>
+

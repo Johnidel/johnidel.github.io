@@ -16,30 +16,32 @@ body {
 }
 
 .page-top{
+	padding:0;
 	margin: 0;
-	padding-top: 1%;
+	width: 100%;
+	padding-top: 1em;
 	padding-bottom:0%;
 	min-height: 14%;
 	background-color: #ff0000;
-	font-size: 1em;
 	
 }
 
 .page-top .title{
 	padding-left: 5%;
+	width: 95%;
 	padding-bottom: 2%;
 	margin: 0;
 	color: white;
 	font-family: CodeB;
 	letter-spacing: 8px;
-	height: 5%;
 	font-size: 250%;
+	min-height: 5%;
+
 }
 
 .page-top nav#page-nav{
-	padding-left: 5%;
 	padding-top:1%;
-	height: 5%;
+	min-height: 5%;
 	width: 100%;
 	font-size: 200%;
 	background-color: #ffff00;
@@ -48,16 +50,16 @@ body {
 .page-top nav#page-nav ul{
 	margin: 0;
 	display: inline-block;
-	width: 100%;
+	width: 95%;
 }
 
 .page-top nav#page-nav ul li{
 	display: inline-block;
-	padding-right: 5%;
+	padding-left: 5%;
 	
 }
 
-.page-top nav#page-nav ul li a{
+.page-top nav#page-nav ul li .nav-button{
 	font-family: CodeB;
 	position: relative;
 	text-decoration: none;
@@ -66,36 +68,41 @@ body {
 	display: block;
 }
 
-.page-top nav#page-nav ul li a:hover{
+.page-top nav#page-nav ul li .nav-button:hover{
 	color: gray;
+	cursor: pointer;
 }
 
-.page-top nav#page-nav ul li a:after{
+.page-top nav#page-nav ul li .nav-button:before{
 	position: absolute;
 	content:'';
-	bottom: -30%;
-	left: 0px;
+	top: 145%;
+	left: 50%;
 	width: 0%;
 	height: 10%;
 	transition: .3s all;
 }
 
-.page-top nav#page-nav ul li a:hover:after{
-	position: absolute;
-	content:'';
-	bottom: -30%;
-	left: 0px;
-	width: 100%;
-	height: 10%;
-	background-color: black;
+.page-top nav#page-nav ul li .nav-button:hover:before{
+	width: 50%;
+	left: 25%;
+	background-color: cyan;
 }
 
+.page-top nav#page-nav ul li .nav-button:after{
+	position: absolute;
+	content:'';
+	top: 175%;
+	left: 50%;
+	width: 0%;
+	height: 10%;
+	transition: .3s all;
+}
 
-.content{
-	margin: 0;
-	padding:0;
-	min-height: 70%;
-	background-color: #00ff00;
+.page-top nav#page-nav ul li .nav-button:hover:after{
+	width: 100%;
+	left: 0%;
+	background-color: cyan;
 }
 
 .footer{
