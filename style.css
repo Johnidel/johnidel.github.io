@@ -13,7 +13,11 @@
 body {
 	margin:0;
 	padding: 0;
+	font-size: 16px;
 }
+
+@media only screen and (max-width: 768px){body{font-size: 10px;}}
+
 
 .page-top{
 	padding:0;
@@ -21,7 +25,7 @@ body {
 	width: 100%;
 	padding-top: 1em;
 	padding-bottom:0%;
-	min-height: 14%;
+	min-height: 10%;
 	background-color: #ff0000;
 	
 }
@@ -34,7 +38,7 @@ body {
 	color: white;
 	font-family: CodeB;
 	letter-spacing: 8px;
-	font-size: 2vw;
+	font-size: 250%;
 	min-height: 5%;
 
 }
@@ -43,9 +47,11 @@ body {
 	padding-top:1%;
 	min-height: 5%;
 	width: 100%;
-	font-size: 1.7vw;
+	font-size: 200%;
 	background-color: #ffff00;
 }
+
+@media only screen and (max-width: 768px){.page-top nav#page-nav {padding-top:2.5%;min-height:3.5%;}}
 
 .page-top nav#page-nav ul{
 	margin: 0;

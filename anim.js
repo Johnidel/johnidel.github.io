@@ -121,7 +121,7 @@ function reset() {
 
 function init_canvas(){
 	var canvas = document.getElementById("main_canvas");
-	canvas.width = window.innerWidth;
+	canvas.width = document.getElementById("page-nav").getBoundingClientRect().width;
 	canvas.height = window.innerHeight * .7;
 	document.getElementById("home").addEventListener("click", function() {animSelect = 1; reset();});
 	document.getElementById("about").addEventListener("click", function() {animSelect = 2; reset();});
@@ -215,39 +215,39 @@ function init() {
 	shadowVal = 20;
 	shadowDir = 0;
 	var homeRect = document.getElementById("home").getBoundingClientRect();
-	var homeX = (homeRect.left + homeRect.width / 2)/ xUnit;
-	//alert(homeX);
-	homeSeries = new LineSeries(new Point(homeX * xUnit, 2.6 * yUnit));
-	homeSeries.append(new Point(homeX * xUnit, 70 * yUnit));
-	homeSeries.append(new Point(1.465 * homeX * xUnit, 70 * yUnit + .465 * homeX * xUnit));
-	homeSeries.append(new Point(2.2955 * homeX * xUnit, 70 * yUnit + .465 * homeX * xUnit));
+	var homeX = (homeRect.left + homeRect.width / 2);
+	
+	homeSeries = new LineSeries(new Point(homeX, 0));
+	homeSeries.append(new Point(homeX, 70 * yUnit));
+	homeSeries.append(new Point(1.465 * homeX, 70 * yUnit + .465 * homeX));
+	homeSeries.append(new Point(2.2955 * homeX, 70 * yUnit + .465 * homeX));
 
-	aboutSeries = new LineSeries(new Point(20 * xUnit, 2.6 * yUnit));
+	aboutSeries = new LineSeries(new Point(20 * xUnit, 0));
 	aboutSeries.append(new Point(20 * xUnit, 10 * yUnit));
 	aboutSeries.append(new Point(18 * xUnit, 10 * yUnit + 2 * xUnit));
 	aboutSeries.append(new Point(13 * xUnit, 10 * yUnit + 2 * xUnit));
 	aboutSeries.append(new Point(11 * xUnit, 10 * yUnit + 4 * xUnit));
 	aboutSeries.append(new Point(11 * xUnit, 38 * yUnit + 8 * xUnit));
 	aboutSeries.append(new Point(15 * xUnit, 38 * yUnit + 12 * xUnit));
-	aboutSeries.append(new Point(2.2955 * homeX * xUnit, 38 * yUnit + 12 * xUnit));
+	aboutSeries.append(new Point(2.2955 * homeX, 38 * yUnit + 12 * xUnit));
 
-	projectSeries = new LineSeries(new Point(32.5 * xUnit, 2.6 * yUnit));
+	projectSeries = new LineSeries(new Point(32.5 * xUnit, 0));
 	projectSeries.append(new Point(32.5 * xUnit, 14 * yUnit));
 	projectSeries.append(new Point(30.5 * xUnit, 14 * yUnit + 2 * xUnit));
 	projectSeries.append(new Point(15 * xUnit, 14 * yUnit + 2 * xUnit));
 	projectSeries.append(new Point(13 * xUnit, 14 * yUnit + 4 * xUnit));
 	projectSeries.append(new Point(13 * xUnit, 40 * yUnit + 4 * xUnit));
 	projectSeries.append(new Point(17 * xUnit, 40 * yUnit + 8 * xUnit));
-	projectSeries.append(new Point(2.2955 * homeX * xUnit, 40 * yUnit + 8 * xUnit));
+	projectSeries.append(new Point(2.2955 * homeX, 40 * yUnit + 8 * xUnit));
 
-	contactSeries = new LineSeries(new Point(45 * xUnit, 2.6 * yUnit));
+	contactSeries = new LineSeries(new Point(45 * xUnit, 0));
 	contactSeries.append(new Point(45 * xUnit, 18 * yUnit));
 	contactSeries.append(new Point(43 * xUnit, 18 * yUnit + 2 * xUnit));
 	contactSeries.append(new Point(17 * xUnit, 18 * yUnit + 2 * xUnit));
 	contactSeries.append(new Point(15 * xUnit, 18 * yUnit + 4 * xUnit));
 	contactSeries.append(new Point(15 * xUnit, 34 * yUnit + 4 * xUnit));
 	contactSeries.append(new Point(18 * xUnit, 34 * yUnit + 7 * xUnit));
-	contactSeries.append(new Point(2.2955 * homeX * xUnit, 34 * yUnit + 7 * xUnit));
+	contactSeries.append(new Point(2.2955 * homeX, 34 * yUnit + 7 * xUnit));
 
 	animLink = [
 		new AnimLineSeries(homeSeries, 100),
