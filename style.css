@@ -13,27 +13,38 @@
 body {
 	margin:0;
 	padding: 0;
+	
 	font-size: 16px;
+	position:relative;
+	overflow: hidden;
 }
 
 @media only screen and (orientation:portrait){body{font-size: 8px;}}
 
+.cont {
+	position:relative;
+	overflow:hidden;
+}
 
-.page-top{
+ .page-top{
 	padding:0;
 	margin: 0;
 	width: 100%;
 	padding-top: 1em;
 	padding-bottom:0%;
-	min-height: 10%;
-	background-color: #34323A;
+	min-height: 8%;
+	background-color: rgba(0,0, 0, .3);
+	box-shadow:0px 10px 10px rgba(0,0, 0, .8);
+	position:absolute;
+	z-index:1;
+	float:left;
 	
 }
 
-.page-top .title{
+ .page-top .title{
 	padding-left: 5%;
 	width: 95%;
-	padding-bottom: 2%;
+	padding-bottom: 0%;
 	margin: 0;
 	color: white;
 	font-family: CodeB;
@@ -43,43 +54,44 @@ body {
 
 }
 
-.page-top nav#page-nav{
-	padding-top:1%;
+
+ .page-top nav#page-nav{
+	padding-top:2%;
 	min-height: 5%;
 	width: 100%;
 	font-size: 200%;
-	background-color: #6D6A76;
+	background-color: rgba(52,50, 58, 0);
 }
 
-@media only screen and (max-width: 768px){.page-top nav#page-nav {padding-top:2.5%;min-height:3.5%;}}
+@media only screen and (orientation:portrait){ .page-top nav#page-nav {padding-top:3.5%;min-height:3.5%;}}
 
-.page-top nav#page-nav ul{
+ .page-top nav#page-nav ul{
 	margin: 0;
 	display: inline-block;
 	width: 95%;
 }
 
-.page-top nav#page-nav ul li{
+ .page-top nav#page-nav ul li{
 	display: inline-block;
 	padding-left: 5%;
 	
 }
 
-.page-top nav#page-nav ul li .nav-button{
+ .page-top nav#page-nav ul li .nav-button{
 	font-family: CodeB;
 	position: relative;
 	text-decoration: none;
-	color: black;
+	color: rgba(255,255,255, .7);
 	transition: .1s all;
 	display: block;
 }
 
-.page-top nav#page-nav ul li .nav-button:hover{
-	color: white;
+ .page-top nav#page-nav ul li .nav-button:hover{
+	color: cyan;
 	cursor: pointer;
 }
 
-.page-top nav#page-nav ul li .nav-button:before{
+ .page-top nav#page-nav ul li .nav-button:before{
 	position: absolute;
 	content:'';
 	top: 145%;
@@ -89,13 +101,14 @@ body {
 	transition: .3s all;
 }
 
-.page-top nav#page-nav ul li .nav-button:hover:before{
+ .page-top nav#page-nav ul li .nav-button:hover:before{
 	width: 50%;
 	left: 25%;
 	background-color: cyan;
+	box-shadow:0px 0px 8px cyan;
 }
 
-.page-top nav#page-nav ul li .nav-button:after{
+ .page-top nav#page-nav ul li .nav-button:after{
 	position: absolute;
 	content:'';
 	top: 175%;
@@ -109,11 +122,50 @@ body {
 	width: 100%;
 	left: 0%;
 	background-color: cyan;
+	box-shadow:0px 0px 8px cyan;
 }
+@media only screen and (orientation:portrait){.foooter  {min-height:10.5%;}}
 
 .footer{
-	padding: 0;
+	padding-left: 12.5%;
 	margin: 0;
-	min-height: 15%;
-	background-color: black;
+	width: 100%;
+	min-height:15%;
+	position:absolute;
+	top: 85%;
+	background-color: rgba(0,0,0,.2);
+	box-shadow:0px 0px 10px black;
+	z-index: 3;
+	display: inline-block;
+
+}
+
+.footer .foot-ele {
+	padding-top: 2%;
+	font-size: 100%;
+	display: inline-block;
+	width: 25%;
+	min-height: 100%;
+	text-align: center;
+	
+	color: rgba(255,255,255, .4);
+	font-family: CodeB;
+	letter-spacing: 8px;
+	font-size: 150%;
+	
+	vertical-align: top;
+}
+
+.footer .foot-ele .content {
+	margin: 0;
+	width: 100%;
+	text-align: center;
+	font-size: 8px;
+	padding-top: 5%;
+}
+
+
+.footer .foot-ele .content a img{
+	vertical-align: middle;
+	width: 95px;
 }
