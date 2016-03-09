@@ -19,7 +19,11 @@ body {
 	overflow: hidden;
 }
 
-@media only screen and (orientation:portrait){body{font-size: 8px;}}
+@media only screen and (max-width: 916px){
+	body{
+		font-size: 8px;
+		}
+	}
 
 .cont {
 	position:relative;
@@ -63,10 +67,11 @@ body {
 	background-color: rgba(52,50, 58, 0);
 }
 
-@media only screen and (orientation:portrait){ .page-top nav#page-nav {padding-top:3.5%;min-height:3.5%;}}
+@media screen and (max-width: 916px){ .page-top nav#page-nav {padding-top:3.5%;min-height:3.5%;}}
 
  .page-top nav#page-nav ul{
 	margin: 0;
+	padding: 0;
 	display: inline-block;
 	width: 95%;
 }
@@ -124,7 +129,7 @@ body {
 	background-color: cyan;
 	box-shadow:0px 0px 8px cyan;
 }
-@media only screen and (orientation:portrait){.foooter  {min-height:10.5%;}}
+@media screen and (max-width: 700px){.foooter  {min-height:10.5%;}}
 
 .footer{
 	padding-left: 12.5%;
@@ -167,5 +172,12 @@ body {
 
 .footer .foot-ele .content a img{
 	vertical-align: middle;
-	width: 95px;
+	max-width: 95px;
+}
+
+.footer .foot-ele .content a img#git{
+	vertical-align: middle;
+	border-radius: 100%;
+	background-color: white;
+	border: 2px solid white;
 }

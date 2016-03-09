@@ -45,8 +45,60 @@ function ModuleRect(rect, text, size, width, bC) {
 	this.width = width;
 	this.done = false;
 	this.blurColor = bC;
+	this.aLines = new Array();
+	
+	var segs = 10;
+	var segX = (this.rect.width - (this.width)) / segs;
+	var rand = Math.round(Math.random() * 50) + 1;
+	for(var i = 0; i < rand - 1; i++)
+	{
+		
+		var startX = this.rect.p.x + this.width / 2;
+		var startY = this.rect.p.y + this.rect.height / rand * (i + 1);
+		var curY = startY;
+		var ls = new LineSeries(new Point(startX, startY));
+		ls.append(new Point(startX + (segX * segs), startY));
+		
+		//Not included, this code generate random lines across the module
+		//However it is hazardous to perfromance and looks quite bad, improvements arent worth the effort
+		
+		/**
+		for(var curX = startX + segX; curX < this.rect.p.x + this.rect.width + 1; curX += segX)
+		{
+			var points = new Array();
+			points[0] = new Point(curX, curY);
+			if(curY - segX > this.rect.p.y)
+			{
+				points[points.length] = new Point(curX, curY - segX);
+			}
+			if(curY + segX < this.rect.p.y + this.rect.height)
+			{
+				points[points.length] = new Point(curX, curY + segX);
+			}
+			
+			var r2 = Math.round((Math.random() * points.length)) + 1;
+			alert(r2);
+			if(r2 < points.length)
+			{
+				ls.append(points[r2]);
+				curY = points[r2].y;
+			}
+			else
+			{
+				ls.append(points[0]);
+				curY = points[0].y;
+			}
+		}*/
+		
+		this.aLines[i] = new AnimLineSeries(ls, 10, W_COLOR, "cyan", 1);
+	}
 	
 	this.draw = function(context) {
+		for(var i = 0; i < this.aLines.length; i++)
+		{
+			this.aLines[i].draw(context);
+		}
+		
 		if(this.blur)
 		{
 			//context.globalAlpha = 1;
@@ -57,6 +109,7 @@ function ModuleRect(rect, text, size, width, bC) {
 			context.globalAlpha = .4;
 			context.shadowBlur = 0;
 		}
+		
 		context.strokeStyle = this.rect.color;
 		context.lineWidth = this.width;
 		var rec = this.rect;
@@ -68,12 +121,22 @@ function ModuleRect(rect, text, size, width, bC) {
 	
 	this.update = function () {
 		this.blur = true;
-		this.done = true;
+		
+		for(var i = 0; i < this.aLines.length; i++)
+		{
+			this.aLines[i].update();
+		}
+		if(this.aLines[0].done)
+			this.done = true;
 	}
 	
 	this.reset = function() {
 		this.done = false;
 		this.blur = false;
+		for(var i = 0; i < this.aLines.length; i++)
+		{
+			this.aLines[i].reset();
+		}
 	}
 }
 
@@ -109,13 +172,14 @@ function LineSeries(p1) {
 	
 }
 
-function AnimLineSeries(ls, time, color1, color2) {
+function AnimLineSeries(ls, time, color1, color2, width) {
 	this.ls = ls;
 	this.animTime = time;
 	this.done = false;
 	this.type = "a";
 	this.color1 = color1;
 	this.color2 = color2;
+	this.width = width;
 	
 	this.reset = function() {
 		this.p = new Array();
@@ -166,8 +230,8 @@ function AnimLineSeries(ls, time, color1, color2) {
 	}
 	
 	this.draw = function(context) {
-		drawLineSeries(context, this.ls, this.color1);
-		drawLineSeries(context, this.curLineSeries, this.color2);
+		drawLineSeries(context, this.ls, this.color1, this.width);
+		drawLineSeries(context, this.curLineSeries, this.color2, this.width);
 	}
 	
 	this.reset();
@@ -272,18 +336,19 @@ function AnimPowerBar(p, width, height, time, segments, color) {
 	
 }
 
-function AnimText(text, slow, x, y, color, size) {
+function AnimText(text, slow, x, y, color1, color2, size) {
 	this.text = text;
 	this.slow = slow;
 	this.x = x;
 	this.y = y;
-	this.color = color;
+	this.color1 = color1;
+	this.color2 = color2;
 	this.size = size;
 	
 	
 	this.draw = function(context) {
-		drawText(context, this.sText, this.x, this.y, this.size, this.color);
-		drawText(context, this.aText, this.x, this.y, this.size, "cyan");
+		drawText(context, this.sText, this.x, this.y, this.size, this.color1, false);
+		drawText(context, this.aText, this.x, this.y, this.size, this.color2, true);
 	}
 	
 	this.update = function() {
@@ -291,7 +356,7 @@ function AnimText(text, slow, x, y, color, size) {
 		if(this.count % this.slow == 0 && this.aText.length < this.text.length)
 		{
 			this.aText += this.sText[this.aText.length];
-			this.sText[animText.length - 1] = " ";
+			this.sText[this.aText.length - 1] = " ";
 		}
 	}
 	
@@ -356,9 +421,11 @@ function init_canvas(){
 	init(context);
 	update();
 }
-var animTextO = "<SYSTEM> HOME";
-var animText = "";
+
 var textIter;
+
+var translation = new Point(100,100);
+var curTrans = new Point(0,0);
 
 function update() {
 	var canvas = document.getElementById('main_canvas');
@@ -367,6 +434,8 @@ function update() {
 	context.fillStyle = "#0E0F0F";
 	context.fillRect(-100000,-100000,200000,200000);
 	
+	
+	
 	context.shadowBlur = shadowVal;
 	drawGrid(context, 7);
 	
@@ -374,6 +443,7 @@ function update() {
 	{	
 		if(animSelect == i + 1)
 		{
+			//916
 			aStrings[i].update();
 		}
 		else {
@@ -386,6 +456,17 @@ function update() {
 		aStrings[i].draw(context);
 	}	
 	
+	if(curTrans.x < translation.x)
+	{	
+	//	context.translate(1, 0);
+		curTrans.x += 1;
+	}
+	
+	if(curTrans.y < translation.y)
+	{	
+	//	context.translate(0, 1);
+		curTrans.y += 1;
+	}
 	
 	t = t + 1;
 	if(t % 5 == 0)
@@ -425,9 +506,9 @@ function drawGrid(context, color) {
 	
 }
 
-function drawText(context, text, x, y, size, color)
+function drawText(context, text, x, y, size, color, high)
 {
-	if(color != "cyan")
+	if(!high)
 	{
 		context.globalAlpha = .4;
 		context.shadowBlur = 0;
@@ -454,7 +535,7 @@ function drawLine(context, line) {
     context.stroke();
 }
 
-function drawLineSeries(context, series, color) {
+function drawLineSeries(context, series, color, width) {
 
 	context.beginPath();
 	context.moveTo(series.p[0].x, series.p[0].y);
@@ -474,7 +555,7 @@ function drawLineSeries(context, series, color) {
 		context.globalAlpha = .3;
 		context.shadowBlur = 0;
 	}
-	context.lineWidth = 8;
+	context.lineWidth = width;
 	context.stroke();
 
 }
@@ -488,9 +569,20 @@ var aStrings;
 function init(context) {
 	
 	t = 0;
-
+	
+	
 	xUnit = window.innerWidth / 100;
 	yUnit = window.innerHeight / 100;
+	
+	//Needed to not break when height gets very small, hard to 45 angles at this points
+	//Lesser of the 2 evils is to overflow off screen and let user pan
+	//Ata certain point you can't be sympatetic for people operating at these resolutions
+	if(window.innerHeight < 610)
+	{
+		xUnit = window.innerWidth / 100;
+		yUnit = window.innerHeight / 100 * 2;
+	}
+	
 	shadowVal = 20;
 	shadowDir = 0;
 	var homeRect = document.getElementById("home").getBoundingClientRect();
@@ -533,10 +625,11 @@ function init(context) {
 	var contactSeries = new LineSeries(new Point(contactX, homeY));
 	contactSeries.append(new Point(contactX, homeY + 4 * yUnit));
 	contactSeries.append(new Point(contactX - .2 * homeX, homeY + 4 * yUnit + .2 * homeX));
-	contactSeries.append(new Point((projectX + contactX) / 2, homeY + 4 * yUnit + .2 * homeX));
-	contactSeries.append(new Point((projectX + contactX) / 2 - .2 * homeX, homeY + 4 * yUnit + .4 * homeX));
-	contactSeries.append(new Point((projectX + contactX) / 2 - .2 * homeX, homeY + 15 * yUnit));
-	contactSeries.append(new Point((projectX + contactX) / 2 - .4 * homeX, homeY + 15 * yUnit + .2 * homeX));
+	contactSeries.append(new Point(projectX + (-projectX + contactX) * .25, homeY + 4 * yUnit + .2 * homeX));
+	contactSeries.append(new Point(projectX + (-projectX + contactX) * .25 - .2 * homeX, homeY + 4 * yUnit + .4 * homeX));
+	contactSeries.append(new Point(projectX + (-projectX + contactX) * .25 - .2 * homeX, homeY + 15 * yUnit));
+	contactSeries.append(new Point(projectX + (-projectX + contactX) * .25
+	- .4 * homeX, homeY + 15 * yUnit + .2 * homeX));
 	contactSeries.append(new Point(homeX + 1.1 * homeX, homeY + 15 * yUnit + .2 * homeX));
 	contactSeries.append(new Point(homeX + .8 * homeX, homeY + 15 * yUnit + .5 * homeX));
 	contactSeries.append(new Point(homeX + .8 * homeX, 45 * yUnit - .2 * homeX));
@@ -544,77 +637,95 @@ function init(context) {
 	contactSeries.append(new Point(2.2955 * homeX, 45 * yUnit));
 
 	var animLink = [
-		new AnimLineSeries(homeSeries, 60, W_COLOR, "cyan"),
-		new AnimLineSeries(aboutSeries, 60, W_COLOR, "cyan"),
-		new AnimLineSeries(projectSeries, 60, W_COLOR, "cyan"),
-		new AnimLineSeries(contactSeries, 60, W_COLOR, "cyan")
+		new AnimLineSeries(homeSeries, 60, W_COLOR, "cyan", 8),
+		new AnimLineSeries(aboutSeries, 60, W_COLOR, "cyan", 8),
+		new AnimLineSeries(projectSeries, 60, W_COLOR, "cyan", 8),
+		new AnimLineSeries(contactSeries, 60, W_COLOR, "cyan", 8)
 	];
 
 	animSelect = 0;
 	var s = 2.2955 * homeX;
 	var enc = new ModuleRect(new Rect(new Point(2.2955 * homeX, 40 * yUnit), 10 * xUnit, 40 * yUnit, "cyan"), "", 15, 3, "cyan");
-	var dec = new ModuleRect(new Rect(new Point(2.2955 * homeX + 20 * xUnit, 40 * yUnit), 10 * xUnit, 40 * yUnit, "cyan"), "", 15, 3, "cyan");
+	var dec = new ModuleRect(new Rect(new Point(2.2955 * homeX + 25 * xUnit, 40 * yUnit), 10 * xUnit, 40 * yUnit, "cyan"), "", 15, 3, "cyan");
 	
 	var e2d1_ = new LineSeries(new Point(s + 10 * xUnit, 50 * yUnit));
-	e2d1_.append(new Point(s + 20 * xUnit, 50 * yUnit));
+	e2d1_.append(new Point(s + 25 * xUnit, 50 * yUnit));
 	var e2d2_ = new LineSeries(new Point(s + 10 * xUnit,70 * yUnit));
-	e2d2_.append(new Point(s + 20 * xUnit, 70 * yUnit));
+	e2d2_.append(new Point(s + 25 * xUnit, 70 * yUnit));
 	
-	var e2d1 = new AnimLineSeries(e2d1_, 60, W_COLOR, "cyan");
-	var e2d2 = new AnimLineSeries(e2d2_, 60, W_COLOR, "cyan");
+	var e2d1 = new AnimLineSeries(e2d1_, 20, W_COLOR, "cyan", 8);
+	var e2d2 = new AnimLineSeries(e2d2_, 20, W_COLOR, "cyan", 8);
 	
 	
 	// HOME
 	
-	var l1_ = new LineSeries(new Point(s + 30 * xUnit, 45 * yUnit));
-	l1_.append(new Point(s + 32 * xUnit, 45 * yUnit));
-	l1_.append(new Point(s + 34 * xUnit, 45 * yUnit - 2 * xUnit));
-	l1_.append(new Point(s + 34 * xUnit, 43 * yUnit - 2 * xUnit));
+	//SPACEs + 30 * xUnit
+	s = s + 35 * xUnit;
+	var sY = 43 * yUnit - 1.5 * xUnit;
 	
+	var l1_ = new LineSeries(new Point(s, 45 * yUnit));
+	l1_.append(new Point(s + 3.5 * xUnit, 45 * yUnit));
+	l1_.append(new Point(s + 5 * xUnit, 45 * yUnit - 1.5 * xUnit));
+	l1_.append(new Point(s + 5 * xUnit, 43 * yUnit - 1.5 * xUnit));
 	
+	var h =  sY - (homeY + 4 * yUnit + .2 * homeX) - 6 * yUnit - xUnit;
 	
-	var l1 =  new AnimLineSeries(l1_, 20, W_COLOR, "cyan");
+	var l1 =  new AnimLineSeries(l1_, 10, W_COLOR, "cyan", 8);
 	
-	var power = new AnimPowerBar(new Point(s + 32.5 * xUnit, 28 * yUnit - 2 * xUnit), 3 * xUnit, 1 * yUnit, 50, 8, W_COLOR);
+	var powerSegs = 8;
+	var powerHeight = powerSegs * 2 * yUnit - yUnit;
 	
+	while(powerHeight > h)
+	{
+		powerSegs = powerSegs - 1;
+		powerHeight = powerSegs * 2 * yUnit - yUnit;
+	}
 	
-	var l2_ = new LineSeries(new Point(s + 34 * xUnit, 28 * yUnit - 2 * xUnit));
-	l2_.append(new Point(s + 34 * xUnit, 26 * yUnit - 2 * xUnit));
-	l2_.append(new Point(s + 35 * xUnit, 26 * yUnit - 3 * xUnit));
-	l2_.append(new Point(s + 36 * xUnit, 26 * yUnit - 3 * xUnit));
-	l2_.append(new Point(s + 37 * xUnit, 26 * yUnit - 2 * xUnit));
-	l2_.append(new Point(s + 37 * xUnit, 44 * yUnit - 2 * xUnit));
-	l2_.append(new Point(s + 38 * xUnit, 44 * yUnit - 1 * xUnit));
-	l2_.append(new Point(s + 39 * xUnit, 44 * yUnit - 1 * xUnit));
-	l2_.append(new Point(s + 40 * xUnit, 44 * yUnit - 2 * xUnit));
-	l2_.append(new Point(s + 40 * xUnit, 43 * yUnit - 2 * xUnit));
+	var power = new AnimPowerBar(new Point(s + 2 * xUnit, sY - powerHeight), 6 * xUnit, 1 * yUnit, 20, powerSegs, W_COLOR);
 	
-	var l2 =  new AnimLineSeries(l2_, 30, W_COLOR, "cyan");
+	var powerY = sY - powerHeight; 
 	
-	var power2 = new AnimPowerBar(new Point(s + 38.5 * xUnit, 28 * yUnit - 2 * xUnit), 3 * xUnit, 1 * yUnit, 50, 8, W_COLOR);
+	s += 1.5 * xUnit;
 	
-	var l3_ = new LineSeries(new Point(s + 40 * xUnit, 28 * yUnit - 2 * xUnit));
-	l3_.append(new Point(s + 40 * xUnit, 26 * yUnit - 2 * xUnit));
-	l3_.append(new Point(s + 41 * xUnit, 26 * yUnit - 3 * xUnit));
-	l3_.append(new Point(s + 55 * xUnit, 26 * yUnit - 3 * xUnit));
-	l3_.append(new Point(s + 56 * xUnit, 26 * yUnit - 2 * xUnit));
-	l3_.append(new Point(s + 56 * xUnit, 28 * yUnit - 2 * xUnit));
+	var l2_ = new LineSeries(new Point(s + 3.5 * xUnit, powerY));
+	l2_.append(new Point(s + 3.5 * xUnit, powerY - 2 * yUnit));
+	l2_.append(new Point(s + 4.5 * xUnit, powerY - 2 * yUnit - xUnit));
+	l2_.append(new Point(s + 7 * xUnit, powerY - 2 * yUnit - xUnit));
+	l2_.append(new Point(s + 8 * xUnit, powerY - 2 * yUnit));
+	l2_.append(new Point(s + 8 * xUnit, sY + 2 * yUnit));
+	l2_.append(new Point(s + 9 * xUnit, sY + 2 * yUnit + 1 * xUnit));
+	l2_.append(new Point(s + 11.5 * xUnit, sY + 2 * yUnit + 1 * xUnit));
+	l2_.append(new Point(s + 12.5 * xUnit, sY + 2 * yUnit));
+	l2_.append(new Point(s + 12.5 * xUnit, sY));
+	
+	var l2 =  new AnimLineSeries(l2_, 10, W_COLOR, "cyan", 8);
+	
+	var power2 = new AnimPowerBar(new Point(s + 9.5 * xUnit, powerY), 6 * xUnit, 1 * yUnit, 20, powerSegs, W_COLOR);
+	
+	var l3_ = new LineSeries(new Point(s + 12.5 * xUnit, powerY));
+	l3_.append(new Point(s + 12.5 * xUnit, powerY - 2 * yUnit));
+	l3_.append(new Point(s + 13.5 * xUnit, powerY - 2 * yUnit - xUnit));
+	l3_.append(new Point(s + 27.5 * xUnit, powerY - 2 * yUnit - xUnit));
+	l3_.append(new Point(s + 28.5 * xUnit, powerY - 2 * yUnit));
+	l3_.append(new Point(s + 28.5 * xUnit, powerY));
 
-	var l3 =  new AnimLineSeries(l3_, 20, W_COLOR, "cyan");
+	var l3 =  new AnimLineSeries(l3_, 10, W_COLOR, "cyan", 8);
 	
 	var portrait = false;
 	var size = 80;
 	context.font = size + "px Lucida Console";
 	
-	while(context.measureText("HOME").width > (20 * xUnit))
+	while(context.measureText("HOME").width > (18 * xUnit))
 	{
 		size -= 2;
 		context.font = size + "px Lucida Console";
 	}
 	
-	var homeTextRect = new ModuleRect(new Rect(new Point(s + 46 * xUnit, 28 * yUnit - 2 * xUnit), 20 * xUnit, 15 * yUnit, W_COLOR), "", 15, 8, "cyan");
-	var xLoc = (s + 56 * xUnit) - context.measureText("HOME").width / 2;
-	var homeText = new AnimText("HOME", 4, xLoc, 30 * yUnit - 2 * xUnit + size, W_COLOR, size);
+	var homeTextRect = new ModuleRect(new Rect(new Point(s + 19.5 * xUnit, powerY + 4), 18 * xUnit, 15 * yUnit, W_COLOR), "", 15, 8, "cyan");
+	
+	var xLoc = (s + 28.5 * xUnit) - context.measureText("HOME").width / 2;
+	
+	var homeText = new AnimText("HOME", 10, xLoc, powerY + 4 + size, W_COLOR, "black", size);
 	
 	
 	
@@ -631,7 +742,6 @@ function init(context) {
 	aS1.push(l3);
 	aS1.push(homeTextRect);
 	aS1.push(homeText);
-	//if
 	
 	var aS2 = new AnimString();
 	aS2.push(animLink[1]);
