@@ -483,6 +483,12 @@ function update() {
 				shadowDir = 0;
 		}
 	}
+	
+	if(window.innerHeight > window.innerWidth)
+	{
+		shadowVal = 0;
+	}
+	
 	window.requestAnimationFrame(update);
 }
 
