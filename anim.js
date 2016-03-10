@@ -61,7 +61,7 @@ function ModuleRect(rect, text, size, width, bC, lines) {
 		
 		//Not included, this code generate random lines across the module
 		//However it is hazardous to perfromance and looks quite bad, improvements arent worth the effort
-		
+		//I also like the simplicity of the lines across, it is easier on the eyes
 		/**
 		for(var curX = startX + segX; curX < this.rect.p.x + this.rect.width + 1; curX += segX)
 		{
@@ -94,11 +94,23 @@ function ModuleRect(rect, text, size, width, bC, lines) {
 	}
 	
 	this.draw = function(context) {
-		for(var i = 0; i < this.aLines.length; i++)
-		{
-			this.aLines[i].draw(context);
-		}
 		
+		var rec = this.rect;
+		
+		if(this.aLines.length < 100)
+		{
+			for(var i = 0; i < this.aLines.length; i++)
+			{
+				this.aLines[i].draw(context);
+			}
+		}
+		else {
+			context.fillStyle = "cyan";
+			context.shadowBlur = 0;
+			context.globalAlpha = .4;
+			context.fillRect(rec.p.x, rec.p.y, rec.width, rec.height);
+		}
+			
 		if(this.blur)
 		{
 			//context.globalAlpha = 1;
@@ -112,7 +124,7 @@ function ModuleRect(rect, text, size, width, bC, lines) {
 		
 		context.strokeStyle = this.rect.color;
 		context.lineWidth = this.width;
-		var rec = this.rect;
+		
 		context.strokeRect(rec.p.x, rec.p.y, rec.width, rec.height);
 		context.font = this.size + "px Lucida Console";
 		
@@ -138,6 +150,11 @@ function ModuleRect(rect, text, size, width, bC, lines) {
 			this.aLines[i].reset();
 		}
 	}
+	
+	this.copy = function() {
+		return new ModuleRect(this.rect, this.text, this.size, this.width, this.blurColor, this.lines);
+	}
+	
 }
 
 function LineAnim(line, time) {
@@ -161,13 +178,27 @@ function LineSeries(p1) {
 	this.p[0] = p1;
 	this.length = 1;
 	this.euclidean = 0;
+	this.last = p1;
+	
 	this.append = function(p) {
 		this.length += 1;
 		this.p[this.length - 1] = p;
 		this.euclidean += p.dist(this.p[this.length - 2]);
+		this.last = p;
+	}
+	this.next = function(x, y) {
+		this.p[this.length] = new Point(this.p[this.length - 1].x + x, this.p[this.length - 1].y + y);
+		this.last = this.p[this.length];
+		this.euclidean += this.p[this.length].dist(this.p[this.length - 1]);
+		this.length += 1;
+		
 	}
 	this.set = function(i, p) {
 		this.p[i] = p;
+		this.update();
+	}
+	this.update = function () {
+		this.last = this.p[this.p.length - 1];
 	}
 	
 }
@@ -182,6 +213,9 @@ function AnimLineSeries(ls, time, color1, color2, width, blur) {
 	this.width = width;
 	this.blur = blur;
 	
+	this.copy = function() {
+		return new AnimLineSeries(this.ls, this.animTime, this.color1, this.color2, this.width, this.blur);
+	}
 	this.reset = function() {
 		this.p = new Array();
 		this.p[0] = ls.p[0].copy();
@@ -198,6 +232,7 @@ function AnimLineSeries(ls, time, color1, color2, width, blur) {
 	};
 	
 	this.update = function() {
+		this.curLineSeries.update();
 		if(this.tTime < this.animTime)
 		{
 			this.p[this.curPoint].add(this.inc.x, this.inc.y);
@@ -265,7 +300,7 @@ function AnimPowerBar(p, width, height, time, segments, color) {
 	this.update = function() {
 
 
-		if(this.rects[0].height <= this.height)
+		if(this.rects[0].height < this.height)
 		{
 			this.rects[0].p.y -= this.incy;
 			this.rects[0].height += this.incy;
@@ -345,6 +380,7 @@ function AnimText(text, slow, x, y, color1, color2, size) {
 	this.color1 = color1;
 	this.color2 = color2;
 	this.size = size;
+	this.done = false;
 	
 	
 	this.draw = function(context) {
@@ -354,37 +390,66 @@ function AnimText(text, slow, x, y, color1, color2, size) {
 	
 	this.update = function() {
 		this.count += 1;
+		
 		if(this.count % this.slow == 0 && this.aText.length < this.text.length)
 		{
 			this.aText += this.sText[this.aText.length];
 			this.sText[this.aText.length - 1] = " ";
 		}
+		if(this.aText.length == this.sText.length)
+			this.done = true;
 	}
 	
 	this.reset = function() {
 		this.count = 0;
 		this.aText = "";
 		this.sText = this.text;
+		this.done = false;
 	}
 	
 	this.reset();
 	
 }
 
+var test;
+var tra = new Point(0,0);
 function AnimString() {
 	this.anims = new Array();
+	this.following = new Array();
 	this.curAnim = 0;
 	
 	this.push = function(arg) {
 		this.anims[this.anims.length] = arg;
 	}
 	
+	this.pushText = function(textArr) {
+		
+		for(var i = 0; i < textArr.length; i++)
+		{
+			this.anims[this.anims.length] = textArr[i];
+		}
+	}
+	
 	this.update = function() {
+		
+		if(this.following.indexOf(this.curAnim) >= 0)
+		{
+			var lines = this.anims[this.curAnim].curLineSeries;
+			
+			curTrans.x = -(lines.last.x - window.innerWidth / 2);
+			curTrans.y = -(lines.last.y - window.innerHeight / 2);
+			translation = curTrans.copy();
+		}
+		else {
+			test = false;
+		}
+		
 		this.anims[this.curAnim].update();
 		if(this.anims[this.curAnim].done && this.curAnim < this.anims.length - 1)
 		{
 			this.curAnim += 1;
 		}
+		
 	}
 	
 	this.draw = function(context) {
@@ -392,6 +457,11 @@ function AnimString() {
 		{
 			this.anims[i].draw(context);
 		}
+	}
+	
+	this.follow = function() {
+		this.following[this.following.length] = this.anims.length - 1;
+		console.log(this);
 	}
 	
 	this.reset = function() {
@@ -404,11 +474,13 @@ function AnimString() {
 }
 
 function reset() {
-	for(var i = 0; i < animLink.length; i++)
+	for(var i = 0; i < aStrings.length; i++)
 	{
-		animLink[i].reset();
+		aStrings[i].reset();
 	}	
 }
+
+var scale = 1;
 
 function init_canvas(){
 	var canvas = document.getElementById("main_canvas");
@@ -420,10 +492,37 @@ function init_canvas(){
 	document.getElementById("contact").addEventListener("click", function() {animSelect = 4; reset();});
 	var context = canvas.getContext('2d');
 	
-	window.onmousedown = handleMouseDown;
-	window.onmousemove = handleMouseMove;
-	window.onmouseup = handleMouseUp;
-	window.onmouseout = handleMouseOut;
+	canvas.onmousedown = handleMouseDown;
+	canvas.onmousemove = handleMouseMove;
+	canvas.onmouseup = handleMouseUp;
+	canvas.onmouseout = handleMouseOut;
+	canvas.onwheel = function(e) {
+		var scaleI = scale;
+		if(e.wheelDelta > 0)
+		{
+			scale += .05;
+		}
+		else {
+			scale -= .05;
+		}
+		if(scale < .05)
+			scale = .05;
+		if(scale > 3)
+			scale = 3;
+		
+		var delta = (scale - 1) / scale;
+		
+		translationS.x = -(window.innerWidth) * (delta) / 2;
+		translationS.y = -(window.innerHeight) * (delta) / 2;
+		console.log(delta);
+		
+		handleMouseMove(e);
+	}
+	
+	window.touchstart = handleMouseDown;
+	window.touchmove = handleMouseMove;
+	window.touchend = handleMouseUp;
+	window.touchcancel = handleMouseOut;
 	
 	init(context);
 	update();
@@ -432,17 +531,31 @@ function init_canvas(){
 var textIter;
 
 var translation = new Point(0,0);
+var translationS = new Point(0,0);
+var translationF = new Point(0,0);
 
 function update() {
+	if(scale > 1)
+		shadowVal = shadowC / scale;
+	else {
+		shadowVal = shadowC * scale;
+	}
 	var canvas = document.getElementById('main_canvas');
 	var context = canvas.getContext('2d');
 	context.globalAlpha = 1;
 	context.fillStyle = "#0E0F0F";
 	context.fillRect(-100000,-100000,200000,200000);
 	
-	context.translate(curTrans.x, curTrans.y)
+	var traStart = new Point(curTrans.x, curTrans.y);
+	
+	context.scale(scale, scale);
+	context.translate(traStart.x, traStart.y);
+	context.translate(translationS.x, translationS.y);
+
+	
 	
 	context.shadowBlur = shadowVal;
+	
 	drawGrid(context, 7);
 	
 	for(var i = 0; i < aStrings.length; i++)
@@ -457,33 +570,34 @@ function update() {
 		}
 	}
 	
-	for(var i = 0; i <aStrings.length; i++)
+	for(var i = 0; i < aStrings.length; i++)
 	{
 		aStrings[i].draw(context);
 	}	
 	
-	context.translate(-curTrans.x, -curTrans.y);
-
+	context.translate(-translationS.x, -translationS.y);
+	context.translate(-traStart.x, -traStart.y);
+	context.scale(1/scale, 1/scale);
 	
 	t = t + 1;
 	if(t % 5 == 0)
 	{
-		if(shadowVal < 50 && shadowDir == 0)
+		if(shadowC < 50 && shadowDir == 0)
 		{
-			shadowVal += 2;
-			if(shadowVal == 50)
+			shadowC += 2;
+			if(shadowC == 50)
 				shadowDir = 1;
 		}
 		else {
-			shadowVal -= 2;
-			if(shadowVal == 10)
+			shadowC -= 2;
+			if(shadowC == 10)
 				shadowDir = 0;
 		}
 	}
 	
 	if(window.innerHeight > window.innerWidth)
 	{
-		shadowVal = 0;
+		shadowC = 0;
 	}
 	
 	window.requestAnimationFrame(update);
@@ -492,9 +606,13 @@ function update() {
 function drawGrid(context, color) {
 
 	context.strokeStyle = "#634444";
-	context.lineWidth = .2;
+	context.lineWidth = 1;
+	context.shadowColor = "cyan";
+	context.globalAlpha = .4;
+	context.shadowBlur = shadowVal;
 	
-	for(var i = -5000; i < 5000; i+=50)
+	
+	for(var i = -5000; i < 5000; i+= 50 / Math.sqrt(scale))
 	{
 			context.beginPath();
 			context.moveTo(i, -10000);
@@ -520,7 +638,7 @@ function drawText(context, text, x, y, size, color, high)
 		context.globalAlpha = 1;
 		context.shadowBlur = shadowVal;
 	}
-	context.font = size + "px Lucida Console";
+	context.font = "Bolder " + size + "px Lucida Console";
 	context.fillStyle = color;
 	context.fillText(text, x, y);
 	context.globalAlpha = .1;
@@ -563,8 +681,125 @@ function drawLineSeries(context, series, color, width, blur) {
 
 }
 
+function readText(str) {
+	var arr = str.split("$");
+	arr.splice(0,1);
+	return arr;
+}
 
-var shadowVal, shadowDir, animSelect;
+function setupText(text, rect, color1, color2, size, context)
+{
+	animArray = new Array();
+	var maxH = rect.height;
+	var maxW = rect.width * 14/16;
+	var lines = 0; 
+	var curWidth = 0;
+	var curH = 0;
+	var startI = 0;
+	var fits = true;
+	var center = false;
+	
+	
+	var s = size;
+	for(var i = 0; i < text.length; i++)
+	{
+		curWidth = 0;
+		var firstChar = text[i].substring(0, text[i].indexOf("_"));
+		var rest = text[i].substring(text[i].indexOf("_") + 1, text[i].length);
+		var words = rest.split(" ");
+		
+		
+		if(firstChar.indexOf("#") >= 0)
+		{
+			s = size * 2.5;
+		}
+		if(firstChar.indexOf("!") >= 0)
+		{
+			words.splice(0,0,"     ");
+			s = size;
+		}
+		if(firstChar.indexOf("C") >= 0)
+		{
+			center = true;
+		}
+		context.font = "Bolder " + s + "px Lucida Console";
+		var spaceW = context.measureText(" ").width;
+		for(var i2 = 0; i2 < words.length; i2++)
+		{
+			
+			var wW = context.measureText(words[i2]).width;
+			if(wW > maxW)
+			{
+				fits = false;
+				break;
+				
+			}
+			
+			if(wW + curWidth > maxW)
+			{
+				//var homeText = new AnimText(txtt, 10, xLoc, powerY + 4 + size, W_COLOR, "black", size);
+				lines++;
+				curH += s;
+				var tWords = words.slice();
+				
+				var line = tWords.splice(startI, i2 - startI);
+				
+				var lineT = "";
+				
+				for(var inc = 0; inc < line.length; inc++)
+				{
+					lineT += line[inc] + " ";
+				}
+				
+				curWidth -= spaceW;
+				var xLoc;
+				//var xLoc = rect.p.x + (rect.width / 2) - (curWidth / 2);
+				if(!center)
+					xLoc = rect.p.x + rect.width / 16;
+				else 
+					xLoc = rect.p.x + (rect.width / 2) - (curWidth / 2);
+				
+				animArray[animArray.length] = new AnimText(lineT, 2, xLoc, curH + rect.p.y, color1, color2, s);
+				
+				startI = i2;
+				curWidth = wW + spaceW;
+			}
+			else {
+				curWidth += wW + spaceW;
+			}
+		}
+		var tWords = words.slice();
+		var last = tWords.splice(startI, words.length - startI);
+		if(last.length != 0)
+		{
+			var lineT = "";
+			for(var inc = 0; inc < last.length; inc++)
+			{
+				lineT += last[inc] + " ";
+			}
+				
+			lines++;
+			curH += s;
+			curWidth -= spaceW;
+			var xLoc;
+			if(!center)
+					xLoc = rect.p.x + rect.width / 16;
+				else 
+					xLoc = rect.p.x + (rect.width / 2) - (curWidth / 2);
+				
+			animArray[animArray.length] = new AnimText(lineT, 1, xLoc, curH + rect.p.y, color1, color2, s);
+			startI = 0;
+			
+		}	
+		
+	}
+	
+	if(curH > maxH || !fits)
+		animArray = setupText(text, rect, color1, color2, size - .5, context);
+	return animArray;
+}
+
+var shadowVal, shadowDir, shadowC, animSelect;
 var inAnim;
 
 var mouseDown;
@@ -588,7 +823,7 @@ function init(context) {
 		yUnit = window.innerHeight / 100 ;
 	}
 	
-	shadowVal = 20;
+	shadowC = 20;
 	shadowDir = 0;
 	var homeRect = document.getElementById("home").getBoundingClientRect();
 	var homeX = (homeRect.left + homeRect.width / 2);
@@ -596,50 +831,45 @@ function init(context) {
 
 	
 	var homeSeries = new LineSeries(new Point(homeX, homeY));
-	homeSeries.append(new Point(homeX, 75 * yUnit - (.465 * homeX)));
-	homeSeries.append(new Point(1.465 * homeX, 75 * yUnit));
-	homeSeries.append(new Point(2.2955 * homeX, 75 * yUnit));
+	homeSeries.append(new Point(homeX, homeY + 3 * homeX));
+
 	
 	var aboutRect = document.getElementById("about").getBoundingClientRect();
 	var aboutX = (aboutRect.left + aboutRect.width / 2);
 	
 	var aboutSeries = new LineSeries(new Point(aboutX, homeY));
-	aboutSeries.append(new Point(aboutX, homeY + 5 * yUnit));
-	aboutSeries.append(new Point(aboutX - .2 * homeX, homeY + 5 * yUnit + .2 * homeX));
-	aboutSeries.append(new Point(homeX + .5 * homeX, homeY + 5 * yUnit + .2 * homeX));
-	aboutSeries.append(new Point(homeX + .2 * homeX, homeY + 5 * yUnit + .5 * homeX));
-	aboutSeries.append(new Point(homeX + .2 * homeX, 65 * yUnit - .4 * homeX));
-	aboutSeries.append(new Point(homeX + .6 * homeX, 65 * yUnit));
-	aboutSeries.append(new Point(2.2955 * homeX, 65 * yUnit));
+	aboutSeries.append(new Point(aboutX, homeY + .4 * homeX));
+	aboutSeries.append(new Point(aboutX - .2 * homeX, homeY + .6 * homeX));
+	aboutSeries.append(new Point(homeX + .5 * homeX, homeY + .6 * homeX));
+	aboutSeries.append(new Point(homeX + .2 * homeX, homeY + .9 * homeX));
+	aboutSeries.append(new Point(homeX + .2 * homeX, homeY + 3 * homeX));
+
 	
 	var projectRect = document.getElementById("projects").getBoundingClientRect();
 	var projectX = (projectRect.left + projectRect.width / 2);
 
 	var projectSeries = new LineSeries(new Point(projectX, homeY));
-	projectSeries.append(new Point(projectX, homeY + 10 * yUnit));
-	projectSeries.append(new Point(projectX - .2 * homeX, homeY + 10 * yUnit + .2 * homeX));
-	projectSeries.append(new Point(homeX + .8 * homeX, homeY + 10 * yUnit + .2 * homeX));
-	projectSeries.append(new Point(homeX + .5 * homeX, homeY + 10 * yUnit + .5 * homeX));
-	projectSeries.append(new Point(homeX + .5 * homeX, 55 * yUnit - .3 * homeX));
-	projectSeries.append(new Point(homeX + .8 * homeX, 55 * yUnit));
-	projectSeries.append(new Point(2.2955 * homeX, 55 * yUnit));
+	projectSeries.append(new Point(projectX, homeY + .8 * homeX));
+	projectSeries.append(new Point(projectX - .2 * homeX, homeY + 1.0 * homeX));
+	projectSeries.append(new Point(homeX + .8 * homeX, homeY + 1.0 * homeX));
+	projectSeries.append(new Point(homeX + .5 * homeX, homeY + 1.3 * homeX));
+	projectSeries.append(new Point(homeX + .5 * homeX, homeY + 3 * homeX));
+
 
 	var contactRect = document.getElementById("contact").getBoundingClientRect();
 	var contactX = (contactRect.left + contactRect.width / 2);
 	
 	var contactSeries = new LineSeries(new Point(contactX, homeY));
-	contactSeries.append(new Point(contactX, homeY + 4 * yUnit));
-	contactSeries.append(new Point(contactX - .2 * homeX, homeY + 4 * yUnit + .2 * homeX));
-	contactSeries.append(new Point(projectX + (-projectX + contactX) * .25, homeY + 4 * yUnit + .2 * homeX));
-	contactSeries.append(new Point(projectX + (-projectX + contactX) * .25 - .2 * homeX, homeY + 4 * yUnit + .4 * homeX));
-	contactSeries.append(new Point(projectX + (-projectX + contactX) * .25 - .2 * homeX, homeY + 15 * yUnit));
-	contactSeries.append(new Point(projectX + (-projectX + contactX) * .25
-	- .4 * homeX, homeY + 15 * yUnit + .2 * homeX));
-	contactSeries.append(new Point(homeX + 1.1 * homeX, homeY + 15 * yUnit + .2 * homeX));
-	contactSeries.append(new Point(homeX + .8 * homeX, homeY + 15 * yUnit + .5 * homeX));
-	contactSeries.append(new Point(homeX + .8 * homeX, 45 * yUnit - .2 * homeX));
-	contactSeries.append(new Point(homeX + homeX, 45 * yUnit));
-	contactSeries.append(new Point(2.2955 * homeX, 45 * yUnit));
+	contactSeries.append(new Point(contactX, homeY + .4 * homeX));
+	contactSeries.append(new Point(contactX - .2 * homeX, homeY + .6 * homeX));
+	contactSeries.append(new Point(projectX + (-projectX + contactX) * .25, homeY + .6 * homeX));
+	contactSeries.append(new Point(projectX + (-projectX + contactX) * .25 - .2 * homeX, homeY + .8 * homeX));
+	contactSeries.append(new Point(projectX + (-projectX + contactX) * .25 - .2 * homeX, homeY + 1 * homeX));
+	contactSeries.append(new Point(projectX + (-projectX + contactX) * .25 - .4 * homeX, homeY + 1.2 * homeX));
+	contactSeries.append(new Point(homeX + 1.1 * homeX, homeY + 1.2 * homeX));
+	contactSeries.append(new Point(homeX + .8 * homeX, homeY + 1.5 * homeX));
+	contactSeries.append(new Point(homeX + .8 * homeX, homeY + 3 * homeX));
+
 
 	var animLink = [
 		new AnimLineSeries(homeSeries, 60, W_COLOR, "cyan", 8, true),
@@ -648,10 +878,14 @@ function init(context) {
 		new AnimLineSeries(contactSeries, 60, W_COLOR, "cyan", 8, true)
 	];
 
+	//BEGIN HOME
+	
 	animSelect = 0;
+	
+	/**
 	var s = 2.2955 * homeX;
-	var enc = new ModuleRect(new Rect(new Point(2.2955 * homeX, 40 * yUnit), 10 * xUnit, 40 * yUnit, "cyan"), "", 15, 3, "cyan", 100);
-	var dec = new ModuleRect(new Rect(new Point(2.2955 * homeX + 25 * xUnit, 40 * yUnit), 10 * xUnit, 40 * yUnit, "cyan"), "", 15, 3, "cyan", 50);
+	var enc = new ModuleRect(new Rect(new Point(2.2955 * homeX, 40 * yUnit), 10 * xUnit, 40 * yUnit, "cyan"), "", 15, 3, "cyan", 30);
+	var dec = new ModuleRect(new Rect(new Point(2.2955 * homeX + 25 * xUnit, 40 * yUnit), 10 * xUnit, 40 * yUnit, "cyan"), "", 15, 3, "cyan", 30);
 	
 	var e2d1_ = new LineSeries(new Point(s + 10 * xUnit, 50 * yUnit));
 	e2d1_.append(new Point(s + 25 * xUnit, 50 * yUnit));
@@ -659,98 +893,121 @@ function init(context) {
 	e2d2_.append(new Point(s + 25 * xUnit, 70 * yUnit));
 	
 	var e2d1 = new AnimLineSeries(e2d1_, 20, W_COLOR, "cyan", 8, true);
+	var e2d2 = new AnimLineSeries(e2d2_, 20, W_COLOR, "cyan", 8, true);**/
+	
+	
+	var OX = homeX;
+	var s = 0;
+	var OY = homeY + 3 * homeX;
+	
+	var u = homeX / 10;
+	
+	var homeSelectRect = new ModuleRect(new Rect(new Point(6 * u, homeY - 5 * u), 8 * u, 5 * u, "cyan"), "", 15, 3, "cyan", 30);
+	
+	var homeSelectText = setupText(readText("$#C_Home"), homeSelectRect.rect, W_COLOR, "black", 20, context)
+	
+	var enc = new ModuleRect(new Rect(new Point(OX - .3 * homeX, OY), 1.4 * homeX, 2 * homeX, "cyan"), "", 15, 3, "cyan", 30);
+	var dec = new ModuleRect(new Rect(new Point(OX + 2.6 * homeX, OY - 1 * homeX), 1.4 * homeX, 4 * homeX, "cyan"), "", 15, 3, "cyan", 30);
+	
+	var e2d1_ = new LineSeries(new Point(OX + 1.1 * homeX, OY + .5 * homeX));
+	e2d1_.append(new Point(OX + 2.6 * homeX, OY + .5 * homeX));
+	var e2d2_ = new LineSeries(new Point(OX + 1.1 * homeX, OY + 1.5 * homeX));
+	e2d2_.append(new Point(OX + 2.6 * homeX, OY + 1.5 * homeX));
+	
+	var e2d1 = new AnimLineSeries(e2d1_, 20, W_COLOR, "cyan", 8, true);
 	var e2d2 = new AnimLineSeries(e2d2_, 20, W_COLOR, "cyan", 8, true);
 	
-	
-	// HOME
-	
-	//SPACEs + 30 * xUnit
-	s = s + 35 * xUnit;
-	var sY = 43 * yUnit - 1.5 * xUnit;
-	
-	var l1_ = new LineSeries(new Point(s, 45 * yUnit));
-	l1_.append(new Point(s + 3.5 * xUnit, 45 * yUnit));
-	l1_.append(new Point(s + 5 * xUnit, 45 * yUnit - 1.5 * xUnit));
-	l1_.append(new Point(s + 5 * xUnit, 43 * yUnit - 1.5 * xUnit));
-	
-	var h =  sY - (homeY + 4 * yUnit + .2 * homeX) - 6 * yUnit - xUnit;
+	var l1_ = new LineSeries(new Point(OX + 4 * homeX, OY - .25 * homeX));
+	l1_.append(new Point(contactX + 1 * homeX, OY - .25 * homeX));
+	l1_.next(2 * u, -2 * u);
+	l1_.next(0, -1 * u);
 	
 	var l1 =  new AnimLineSeries(l1_, 10, W_COLOR, "cyan", 8, true);
 	
-	var powerSegs = 8;
-	var powerHeight = powerSegs * 2 * yUnit - yUnit;
+	var power = new AnimPowerBar(new Point(l1_.last.x - 5 * u, l1_.last.y - 19 * u), 10 * u, 1 * u, 20, 10, W_COLOR);
 	
-	while(powerHeight > h)
-	{
-		powerSegs = powerSegs - 1;
-		powerHeight = powerSegs * 2 * yUnit - yUnit;
-	}
-	
-	var power = new AnimPowerBar(new Point(s + 2 * xUnit, sY - powerHeight), 6 * xUnit, 1 * yUnit, 20, powerSegs, W_COLOR);
-	
-	var powerY = sY - powerHeight; 
-	
-	s += 1.5 * xUnit;
-	
-	var l2_ = new LineSeries(new Point(s + 3.5 * xUnit, powerY));
-	l2_.append(new Point(s + 3.5 * xUnit, powerY - 2 * yUnit));
-	l2_.append(new Point(s + 4.5 * xUnit, powerY - 2 * yUnit - xUnit));
-	l2_.append(new Point(s + 7 * xUnit, powerY - 2 * yUnit - xUnit));
-	l2_.append(new Point(s + 8 * xUnit, powerY - 2 * yUnit));
-	l2_.append(new Point(s + 8 * xUnit, sY + 2 * yUnit));
-	l2_.append(new Point(s + 9 * xUnit, sY + 2 * yUnit + 1 * xUnit));
-	l2_.append(new Point(s + 11.5 * xUnit, sY + 2 * yUnit + 1 * xUnit));
-	l2_.append(new Point(s + 12.5 * xUnit, sY + 2 * yUnit));
-	l2_.append(new Point(s + 12.5 * xUnit, sY));
+	var l2_ = new LineSeries(new Point(l1_.last.x, l1_.last.y - 19 * u));
+	l2_.next(0, -1 * u);
+	l2_.next(2 * u, -2 * u);
+	l2_.next(7 * u, 0);
+	l2_.next(2 * u, 2 * u);
+	l2_.next(0, 21 * u);
+	l2_.next(2*u, 2*u);
+	l2_.next(5*u, 0);
+	l2_.next(2*u, -2*u);
+	l2_.next(0, -u);
 	
 	var l2 =  new AnimLineSeries(l2_, 10, W_COLOR, "cyan", 8, true);
 	
-	var power2 = new AnimPowerBar(new Point(s + 9.5 * xUnit, powerY), 6 * xUnit, 1 * yUnit, 20, powerSegs, W_COLOR);
+	var power2 = new AnimPowerBar(new Point(l2_.last.x - 5 * u, l2_.last.y - 19 * u), 10 * u, 1 * u, 20, 10, W_COLOR);
 	
-	var l3_ = new LineSeries(new Point(s + 12.5 * xUnit, powerY));
-	l3_.append(new Point(s + 12.5 * xUnit, powerY - 2 * yUnit));
-	l3_.append(new Point(s + 13.5 * xUnit, powerY - 2 * yUnit - xUnit));
-	l3_.append(new Point(s + 27.5 * xUnit, powerY - 2 * yUnit - xUnit));
-	l3_.append(new Point(s + 28.5 * xUnit, powerY - 2 * yUnit));
-	l3_.append(new Point(s + 28.5 * xUnit, powerY));
-
+	var l3_ = new LineSeries(new Point(l2_.last.x, l2_.last.y - 19 * u));
+	l3_.next(0, -1 * u);
+	l3_.next(2 * u, -2 * u);
+	l3_.next(30 * u, 0);
+	l3_.next(2 * u, 2 * u);
+	l3_.next(0, 1 * u);
+	
+	
 	var l3 =  new AnimLineSeries(l3_, 10, W_COLOR, "cyan", 8, true);
 	
-	var portrait = false;
-	var size = 80;
-	context.font = size + "px Lucida Console";
+	var homeRect = new ModuleRect(new Rect(new Point(l3_.last.x - 20 * u, l3_.last.y), 40 * u, 40 * u, "cyan"), "", 15, 3, "cyan", 300);
 	
-	while(context.measureText("HOME").width > (18 * xUnit))
-	{
-		size -= 2;
-		context.font = size + "px Lucida Console";
-	}
-	var txtt = window.innerWidth.toString() + "\u0020" + window.innerHeight.toString();
-	
-	var homeTextRect = new ModuleRect(new Rect(new Point(s + 19.5 * xUnit, powerY + 4), 18 * xUnit, 15 * yUnit, W_COLOR), "", 15, 8, "cyan", 200);
-	
-	var xLoc = (s + 28.5 * xUnit) - context.measureText(txtt).width / 2;
-	
-	var homeText = new AnimText(txtt, 10, xLoc, powerY + 4 + size, W_COLOR, "black", size);
-	
-	
-	
-	
+	var contents = "$#_Home$_ $!_Welcome, feel free to pan the camera around and explore!$_Make use of zoom if something isnt on the screen.$_ $_Click the buttons and the \"circuit\" will take you there.";
+
+	contents = readText(contents);
+	homeText = setupText(contents, homeRect.rect, W_COLOR, "black", 20, context);
+
 	var aS1 = new AnimString();
+	aS1.push(homeSelectRect);
+	aS1.pushText(homeSelectText);
 	aS1.push(animLink[0]);
 	aS1.push(enc);
 	aS1.push(e2d1);
+	aS1.push(e2d2);
 	aS1.push(dec);
 	aS1.push(l1);
 	aS1.push(power);
 	aS1.push(l2);
 	aS1.push(power2);
 	aS1.push(l3);
-	aS1.push(homeTextRect);
-	aS1.push(homeText);
+	aS1.push(homeRect);
+	
+	for(var i = 0; i < homeText.length; i++)
+	{
+		aS1.push(homeText[i]);
+	}
+	
+	//About Me
+	
+	var aboutSelectRect = new ModuleRect(new Rect(new Point(aboutX - 4 * u, homeY - 5 * u), 8 * u, 5 * u, "cyan"), "", 15, 3, "cyan", 30);
+	
+	var aboutSelectText = setupText(readText("$#C_About Me"), aboutSelectRect.rect, W_COLOR, "black", 20, context)
+	
+	var l4_ = new LineSeries(new Point(OX + 4 * homeX, OY + 5 * u));
+	l4_.next(40 * u, 0);
+	l4_.next(15 * u, 15 * u);
+	l4_.next(50 * u, 0);
+	l4_.next(150 * u, -150 * u);
+	l4_.next(0, -100 * u);
+	
+	var l4 =  new AnimLineSeries(l4_, 800, W_COLOR, "cyan", 8, true);
+	
+	var power3 = new AnimPowerBar(new Point(l4_.last.x - 10 * u, l4_.last.y - 78 * u), 20 * u, 2 * u, 60, 20, W_COLOR);
 	
 	var aS2 = new AnimString();
+	aS2.push(aboutSelectRect);
+	aS2.pushText(aboutSelectText);
 	aS2.push(animLink[1]);
+	aS2.push(enc.copy());
+	aS2.push(e2d1.copy());
+	aS2.push(e2d2.copy());
+	aS2.push(dec.copy());
+	aS2.push(l4);
+	aS2.follow();
+	
+	aS2.push(power3);
+
 	
 	var aS3 = new AnimString();
 	aS3.push(animLink[2]);
@@ -772,11 +1029,9 @@ function handleMouseDown(e) {
 function handleMouseMove(e) {
 	if(mouseDown)
 	{
-		curTrans = new Point(translation.x + (e.x - anc.x), translation.y + (e.y - anc.y));
+		curTrans = new Point(translation.x + 1 / scale * (e.x - anc.x), translation.y + 1 / scale * (e.y - anc.y));
 	}
-	else {
-		curTrans = translation.copy();
-	}
+	
 }
 
 function handleMouseUp(e) {
