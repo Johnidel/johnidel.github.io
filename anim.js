@@ -621,7 +621,7 @@ function update() {
 	
 	context.shadowBlur = shadowVal;
 	
-	drawGrid(context, 7);
+	//drawGrid(context, 7);
 	
 	for(var i = 0; i < aStrings.length; i++)
 	{	
@@ -888,6 +888,13 @@ function init(context) {
 	var homeRect = document.getElementById("home").getBoundingClientRect();
 	var homeX = (homeRect.left + homeRect.width / 2);
 	var homeY = document.getElementById("top").getBoundingClientRect().bottom + 1;
+	
+	var LINE_WIDTH = 8;
+	
+	if(window.innerWidth < 700)
+	{
+		LINE_WIDTH = 3;
+	}
 
 	
 	var homeSeries = new LineSeries(new Point(homeX, homeY));
@@ -932,10 +939,10 @@ function init(context) {
 
 
 	var animLink = [
-		new AnimLineSeries(homeSeries, 60, W_COLOR, "cyan", 8, true),
-		new AnimLineSeries(aboutSeries, 60, W_COLOR, "cyan", 8, true),
-		new AnimLineSeries(projectSeries, 60, W_COLOR, "cyan", 8, true),
-		new AnimLineSeries(contactSeries, 60, W_COLOR, "cyan", 8, true)
+		new AnimLineSeries(homeSeries, 60, W_COLOR, "cyan", LINE_WIDTH, true),
+		new AnimLineSeries(aboutSeries, 60, W_COLOR, "cyan", LINE_WIDTH, true),
+		new AnimLineSeries(projectSeries, 60, W_COLOR, "cyan", LINE_WIDTH, true),
+		new AnimLineSeries(contactSeries, 60, W_COLOR, "cyan", LINE_WIDTH, true)
 	];
 
 	//BEGIN HOME
@@ -955,6 +962,7 @@ function init(context) {
 	var e2d1 = new AnimLineSeries(e2d1_, 20, W_COLOR, "cyan", 8, true);
 	var e2d2 = new AnimLineSeries(e2d2_, 20, W_COLOR, "cyan", 8, true);**/
 	
+	var declines = 4;
 	
 	var OX = homeX;
 	var s = 0;
@@ -966,23 +974,23 @@ function init(context) {
 	
 	var homeSelectText = setupText(readText("$#C_Home"), homeSelectRect.rect, W_COLOR, "black", 20, context)
 	
-	var enc = new ModuleRect(new Rect(new Point(OX - .3 * homeX, OY), 1.4 * homeX, 2 * homeX, "cyan"), "", 15, 3, "cyan", 30);
-	var dec = new ModuleRect(new Rect(new Point(OX + 2.6 * homeX, OY - 1 * homeX), 1.4 * homeX, 4 * homeX, "cyan"), "", 15, 3, "cyan", 30);
+	var enc = new ModuleRect(new Rect(new Point(OX - .3 * homeX, OY), 1.4 * homeX, 2 * homeX, "cyan"), "", 15, 3, "cyan", declines);
+	var dec = new ModuleRect(new Rect(new Point(OX + 2.6 * homeX, OY - 1 * homeX), 1.4 * homeX, 4 * homeX, "cyan"), "", 15, 3, "cyan", declines);
 	
 	var e2d1_ = new LineSeries(new Point(OX + 1.1 * homeX, OY + .5 * homeX));
 	e2d1_.append(new Point(OX + 2.6 * homeX, OY + .5 * homeX));
 	var e2d2_ = new LineSeries(new Point(OX + 1.1 * homeX, OY + 1.5 * homeX));
 	e2d2_.append(new Point(OX + 2.6 * homeX, OY + 1.5 * homeX));
 	
-	var e2d1 = new AnimLineSeries(e2d1_, 20, W_COLOR, "cyan", 8, true);
-	var e2d2 = new AnimLineSeries(e2d2_, 20, W_COLOR, "cyan", 8, true);
+	var e2d1 = new AnimLineSeries(e2d1_, 20, W_COLOR, "cyan", LINE_WIDTH, true);
+	var e2d2 = new AnimLineSeries(e2d2_, 20, W_COLOR, "cyan", LINE_WIDTH, true);
 	
 	var l1_ = new LineSeries(new Point(OX + 4 * homeX, OY - .25 * homeX));
 	l1_.append(new Point(contactX + 1 * homeX, OY - .25 * homeX));
 	l1_.next(2 * u, -2 * u);
 	l1_.next(0, -1 * u);
 	
-	var l1 =  new AnimLineSeries(l1_, 10, W_COLOR, "cyan", 8, true);
+	var l1 =  new AnimLineSeries(l1_, 10, W_COLOR, "cyan", LINE_WIDTH, true);
 	
 	var power = new AnimPowerBar(new Point(l1_.last.x - 5 * u, l1_.last.y - 19 * u), 10 * u, 1 * u, 20, 10, W_COLOR);
 	
@@ -997,7 +1005,7 @@ function init(context) {
 	l2_.next(2*u, -2*u);
 	l2_.next(0, -u);
 	
-	var l2 =  new AnimLineSeries(l2_, 10, W_COLOR, "cyan", 8, true);
+	var l2 =  new AnimLineSeries(l2_, 10, W_COLOR, "cyan", LINE_WIDTH, true);
 	
 	var power2 = new AnimPowerBar(new Point(l2_.last.x - 5 * u, l2_.last.y - 19 * u), 10 * u, 1 * u, 20, 10, W_COLOR);
 	
@@ -1009,7 +1017,7 @@ function init(context) {
 	l3_.next(0, 1 * u);
 	
 	
-	var l3 =  new AnimLineSeries(l3_, 10, W_COLOR, "cyan", 8, true);
+	var l3 =  new AnimLineSeries(l3_, 10, W_COLOR, "cyan", LINE_WIDTH, true);
 	
 	var homeRect = new ModuleRect(new Rect(new Point(l3_.last.x - 20 * u, l3_.last.y), 40 * u, 40 * u, "cyan"), "", 15, 3, "cyan", 300);
 	
@@ -1051,7 +1059,7 @@ function init(context) {
 	l4_.next(150 * u, -150 * u);
 	l4_.next(0, -100 * u);
 	
-	var l4 =  new AnimLineSeries(l4_, 120, W_COLOR, "cyan", 8, true);
+	var l4 =  new AnimLineSeries(l4_, 120, W_COLOR, "cyan", LINE_WIDTH, true);
 	
 	var power3 = new AnimPowerBar(new Point(l4_.last.x - 10 * u, l4_.last.y - 78 * u), 20 * u, 2 * u, 60, 20, W_COLOR);
 	
@@ -1060,14 +1068,14 @@ function init(context) {
 	l5_.next(4 * u, -4 * u);
 	l5_.next(20 * u, 0);
 	
-	var l5 =  new AnimLineSeries(l5_, 10, W_COLOR, "cyan", 8, true);
+	var l5 =  new AnimLineSeries(l5_, 10, W_COLOR, "cyan", LINE_WIDTH, true);
 	
-	var aboutDec = new ModuleRect(new Rect(new Point(l5_.last.x, l5_.last.y - 7.5 * u), 15 * u, 15 * u, "cyan"), "", 15, 3, "cyan",  30);
+	var aboutDec = new ModuleRect(new Rect(new Point(l5_.last.x, l5_.last.y - 7.5 * u), 15 * u, 15 * u, "cyan"), "", 15, 3, "cyan",  declines);
 	
 	var l6_ = new LineSeries(new Point(aboutDec.rect.p.x + aboutDec.rect.width, l5_.last.y));
 	l6_.next(20 * u, 0);
 	
-	var l6 =  new AnimLineSeries(l6_, 10, W_COLOR, "cyan", 8, true);
+	var l6 =  new AnimLineSeries(l6_, 10, W_COLOR, "cyan", LINE_WIDTH, true);
 	
 	var aboutT = new ModuleRect(new Rect(new Point(l6_.last.x, l6_.last.y - 7.5 * u), 40 * u, 15 * u, "cyan"), "", 15, 3, "cyan",  150);	
 	
@@ -1078,7 +1086,7 @@ function init(context) {
 	l7_.next(2 * u, 2 * u);
 	l7_.next(10 * u, 0);
 	
-	var l7 =  new AnimLineSeries(l7_, 10, W_COLOR, "cyan", 8, true);
+	var l7 =  new AnimLineSeries(l7_, 10, W_COLOR, "cyan", LINE_WIDTH, true);
 	
 	var aboutC = new ModuleRect(new Rect(new Point(l7_.last.x, l7_.last.y - 5* u), 56 * u, 60 * u, "cyan"), "", 15, 3, "cyan",  150);	
 	
