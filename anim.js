@@ -538,15 +538,14 @@ function init_canvas(){
 		translationS.x = -(window.innerWidth) * (delta) / 2;
 		translationS.y = -(window.innerHeight) * (delta) / 2;
 		
-		console.log(delta);
-		
 		handleMouseMove(e);
 	}
 	
-	window.touchstart = handleMouseDown;
-	window.touchmove = handleMouseMove;
-	window.touchend = handleMouseUp;
-	window.touchcancel = handleMouseOut;
+	canvas.addEventListener("touchstart", touchStart, false);
+	canvas.addEventListener("touchmove", touchMove, false);
+	canvas.addEventListener("touchend", touchEnd, false);
+	canvas.addEventListener("touchcancel", touchEnd, false);
+
 	
 	init(context);
 	update();
@@ -583,9 +582,8 @@ function update() {
 	var maxTrans = maxTransO / (scale * scale);
 	var followC = follow;
 	
-	//var traStart = new Point(-2700, 2200);
 	var traStart = new Point(translationF.x, translationF.y);
-	
+
 	
 	if((traStart.x - prevTrans.x) * (traStart.x - prevTrans.x) + (traStart.y - prevTrans.y) * (traStart.y - prevTrans.y) > maxTrans * maxTrans && follow)
 	{
@@ -676,19 +674,16 @@ function drawGrid(context, color) {
 	context.globalAlpha = .4;
 	context.shadowBlur = shadowVal;
 	
-	
+	context.beginPath();
 	for(var i = -10000; i < 10000; i+= 50 / Math.sqrt(scale))
 	{
-			context.beginPath();
 			context.moveTo(i, -10000);
 			context.lineTo(i, 10000);
-			context.stroke();
-			
-			context.beginPath();
 			context.moveTo(-10000, i);
 			context.lineTo(10000, i);
-			context.stroke();
 	}
+	
+	context.stroke();
 	
 }
 
@@ -1127,7 +1122,6 @@ var anc = new Point(0,0);
 var curTrans = new Point(0,0);
 
 function handleMouseDown(e) {
-	e = e
 	mouseDown = true;
 	anc = new Point(e.x, e.y);
 	
@@ -1137,6 +1131,7 @@ function handleMouseMove(e) {
 	if(mouseDown)
 	{
 		curTrans = new Point(translation.x + 1 / scale * (e.x - anc.x), translation.y + 1 / scale * (e.y - anc.y));
+		console.log(e);
 	}
 	
 }
@@ -1152,9 +1147,55 @@ function handleMouseOut(e) {
 }
 
 function touchStart(e) {
-	touch1 = e.changedTocuhes[0];
+	touch1 = e.changedTouches[0];
+	if(!mouseDown)
+		anc = new Point(touch1.clientX, touch1.clientY);
+	mouseDown = true;
+}
+var touchScroll = false;
+var touchDist = 0;
+function touchMove(e) {
+	e1 = e.changedTouches[0];
+	if(mouseDown && e.changedTouches.length == 1)
+	{	
+		curTrans = new Point(translation.x + 1 / scale * (e1.clientX - anc.x), translation.y + 1 / scale * (e1.clientY - anc.y));
+	}
+	else if(e.changedTouches.length == 2 && !touchScroll)
+	{
+		touchScroll = true;
+		e2 = e.changedTouches[1];
+		var d = (e1.clientX - e2.clientX) * (e1.clientX - e2.clientX) + (e1.clientY - e2.clientY) + (e1.clientY - e2.clientY);
+		touchDist = d;
+	}
+	else if(e.changedTouches.length == 2)
+	{
+		e2 = e.changedTouches[1];
+		var d = (e1.clientX - e2.clientX) * (e1.clientX - e2.clientX) + (e1.clientY - e2.clientY) + (e1.clientY - e2.clientY);
+		
+		if(d - touchDist > 20)
+		{
+			scale += .05;
+		}
+		else if(d - touchDist < -20){
+			scale -= .05;
+		}
+		
+		if(scale < .05)
+			scale = .05;
+		if(scale > 3)
+			scale = 3;
+		
+		var delta = (scale - 1) / scale;
+		
+		translationS.x = -(window.innerWidth) * (delta) / 2;
+		translationS.y = -(window.innerHeight) * (delta) / 2;
+	}
 }
 
+function touchEnd(e) {
+	mouseDown = false;
+	translation = curTrans.copy();
+}
 
 /**
 var throt;
