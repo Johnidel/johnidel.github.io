@@ -90,7 +90,7 @@ function ModuleRect(rect, text, size, width, bC, lines) {
 			}
 		}*/
 		
-		this.aLines[i] = new AnimLineSeries(ls, 10, W_COLOR, "cyan", 1, false);
+		this.aLines[i] = new AnimLineSeries(ls, 5, W_COLOR, "cyan", 1, false);
 	}
 	
 	this.draw = function(context) {
@@ -947,10 +947,10 @@ function init(context) {
 
 
 	var animLink = [
-		new AnimLineSeries(homeSeries, 60, W_COLOR, "cyan", LINE_WIDTH, true),
-		new AnimLineSeries(aboutSeries, 60, W_COLOR, "cyan", LINE_WIDTH, true),
-		new AnimLineSeries(projectSeries, 60, W_COLOR, "cyan", LINE_WIDTH, true),
-		new AnimLineSeries(contactSeries, 60, W_COLOR, "cyan", LINE_WIDTH, true)
+		new AnimLineSeries(homeSeries, 20, W_COLOR, "cyan", LINE_WIDTH, true),
+		new AnimLineSeries(aboutSeries, 20, W_COLOR, "cyan", LINE_WIDTH, true),
+		new AnimLineSeries(projectSeries, 20, W_COLOR, "cyan", LINE_WIDTH, true),
+		new AnimLineSeries(contactSeries, 20, W_COLOR, "cyan", LINE_WIDTH, true)
 	];
 
 	//BEGIN HOME
@@ -1063,7 +1063,7 @@ function init(context) {
 	var l4_ = new LineSeries(new Point(OX + 4 * homeX, OY + 5 * u));
 	l4_.next(40 * u, 0);
 	l4_.next(15 * u, 15 * u);
-	l4_.next(50 * u, 0);
+	l4_.next(70 * u, 0);
 	l4_.next(150 * u, -150 * u);
 	l4_.next(0, -100 * u);
 	
@@ -1098,7 +1098,7 @@ function init(context) {
 	
 	var aboutC = new ModuleRect(new Rect(new Point(l7_.last.x, l7_.last.y - 5* u), 56 * u, 60 * u, "cyan"), "", 15, 3, "cyan",  150);	
 	
-	var aboutCText = setupText(readText("$!_I am a second year computer engineering student at Boston University.$_My primary interests are in software development. I have worked on a wide range of projects ranging from mobile games to desktop client-server programs. I am interested in creating software that makes everyday life a little bit easier.$_I code in a wide variety of languages including:$!_*Java, Java EE$!_*C, C++$!_*Javascript, HTML$!_*Python, MySQL"), aboutC.rect, W_COLOR, "black", 30, context);
+	var aboutCText = setupText(readText("$!_I am a second year computer engineering student at Boston University.$_My primary interests are in software development. I have worked on a wide range of projects ranging from mobile games to desktop client-server software. I am interested in creating software that makes everyday life a little bit easier.$_I code in a wide variety of languages including:$!_*Java, Java EE$!_*C, C++$!_*Javascript, HTML$!_*Python, MySQL"), aboutC.rect, W_COLOR, "black", 30, context);
 	
 	var aS2 = new AnimString();
 	aS2.push(aboutSelectRect);
