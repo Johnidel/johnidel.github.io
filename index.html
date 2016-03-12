@@ -4,15 +4,16 @@
 <link rel="stylesheet" type="text/css" href="style.css">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-
+<meta charset="UTF-8">
 </head>
 
 <body onload="init_canvas();">
+<div class="wrap">
 	<div id="top" class="page-top">
 		<div id="title" class="title">John Ivan Delaney</div>
 		<nav id="page-nav">
 			<ul>
-				<li> <div class="nav-button" id="home">Home</div></li>
+				<li> <div class="nav-button" id="home" href="mailto:johnidel127@gmail.com?subject=subject&body=body">Home</div></li>
 				<li> <div class="nav-button" id="about"> About Me</div></li>
 				<li> <div class="nav-button" id="projects"> Projects</div></li>
 				<li> <div class="nav-button" id="contact"> Contact</div></li>
@@ -20,8 +21,11 @@
 		</nav>
 	</div>
 <canvas id="main_canvas" style="padding:0; margin: 0;position:absolute;cursor:all-scroll;";></canvas>
+
+
+
 <script src="anim.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+
 <div id="foot" class="footer">
 <div class="foot-ele"> 
 	Email <div class="content">johnidel @bu.edu</div>
@@ -36,7 +40,10 @@
 <div class="foot-ele"> 
 	Thanks <div class="content">Github Pages</div>
 </div>
+<div style="z-index: 0;display:none;">
 
+</div>
+</div>
 </div>
 
 

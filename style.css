@@ -19,18 +19,18 @@ body {
 	overflow: hidden;
 }
 
-@media only screen and (max-width: 916px){
+@media screen and (max-width: 916px){
 	body{
 		font-size: 8px;
 		}
 	}
 
-.cont {
-	position:relative;
-	overflow:hidden;
+div.wrap{
+	width:100%;
+	height:100%;
 }
 
- .page-top{
+ div.page-top{
 	padding:0;
 	margin: 0;
 	width: 100%;
@@ -44,10 +44,11 @@ body {
 	float:left;
 	
 	-webkit-user-select: none;
+	-moz-user-select: none;
 	
 }
 
- .page-top .title{
+ div.page-top .title{
 	padding-left: 5%;
 	width: 95%;
 	padding-bottom: 0%;
@@ -61,7 +62,7 @@ body {
 }
 
 
- .page-top nav#page-nav{
+ div.page-top nav#page-nav{
 	padding-top:2%;
 	min-height: 5%;
 	width: 100%;
@@ -71,61 +72,65 @@ body {
 
 @media screen and (max-width: 916px){ .page-top nav#page-nav {padding-top:3.5%;min-height:3.5%;}}
 
- .page-top nav#page-nav ul{
+ div.page-top nav#page-nav ul{
 	margin: 0;
 	padding: 0;
 	display: inline-block;
 	width: 95%;
+
 }
 
- .page-top nav#page-nav ul li{
+ div.page-top nav#page-nav ul li{
 	display: inline-block;
 	padding-left: 5%;
-	
 }
 
- .page-top nav#page-nav ul li .nav-button{
+ div.page-top nav#page-nav ul li div.nav-button{
 	font-family: CodeB;
 	position: relative;
 	text-decoration: none;
 	color: rgba(255,255,255, .7);
-	transition: .1s all;
+	-webkit-transition: .1s all;
+	-moz-transition: .1s all;
 	display: block;
+
 }
 
- .page-top nav#page-nav ul li .nav-button:hover{
+ div.page-top nav#page-nav ul li div.nav-button:hover {
 	color: cyan;
 	cursor: pointer;
 }
 
- .page-top nav#page-nav ul li .nav-button:before{
+ div.page-top nav#page-nav ul li div.nav-button:before{
 	position: absolute;
 	content:'';
 	top: 145%;
 	left: 50%;
 	width: 0%;
 	height: 10%;
-	transition: .3s all;
+	-webkit-transition: .3s all;
+	-moz-transition: .3s all;
 }
 
- .page-top nav#page-nav ul li .nav-button:hover:before{
+ div.page-top nav#page-nav ul li div.nav-button:hover:before{
 	width: 50%;
 	left: 25%;
 	background-color: cyan;
 	box-shadow:0px 0px 8px cyan;
 }
 
- .page-top nav#page-nav ul li .nav-button:after{
+ div.page-top nav#page-nav ul li div.nav-button:after{
 	position: absolute;
 	content:'';
 	top: 175%;
 	left: 50%;
 	width: 0%;
 	height: 10%;
-	transition: .3s all;
+	-webkit-transition: .3s all;
+	-moz-transition: .3s all;
 }
 
-.page-top nav#page-nav ul li .nav-button:hover:after{
+div.page-top nav#page-nav ul li:hover div.nav-button:hover:after{
 	width: 100%;
 	left: 0%;
 	background-color: cyan;
@@ -133,13 +138,13 @@ body {
 }
 @media screen and (max-width: 700px){.foooter  {min-height:10.5%;}}
 
-.footer{
+div.footer{
 	padding-left: 12.5%;
 	margin: 0;
-	width: 100%;
+	min-width: 87.5%;
 	min-height:15%;
 	position:absolute;
-	top: 85%;
+	bottom: 0;
 	background-color: rgba(0,0,0,.2);
 	box-shadow:0px 0px 10px black;
 	z-index: 3;
@@ -147,7 +152,7 @@ body {
 
 }
 
-.footer .foot-ele {
+div.footer div.foot-ele {
 	padding-top: 2%;
 	font-size: 100%;
 	display: inline-block;
@@ -163,7 +168,7 @@ body {
 	vertical-align: top;
 }
 
-.footer .foot-ele .content {
+div.footer div.foot-ele div.content {
 	margin: 0;
 	width: 100%;
 	text-align: center;
@@ -172,12 +177,12 @@ body {
 }
 
 
-.footer .foot-ele .content a img{
+div.footer div.foot-ele div.content a img{
 	vertical-align: middle;
 	max-width: 95px;
 }
 
-.footer .foot-ele .content a img#git{
+div.footer div.foot-ele div.content a img#git{
 	vertical-align: middle;
 	border-radius: 100%;
 	background-color: white;

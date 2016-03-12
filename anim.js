@@ -108,7 +108,7 @@ function ModuleRect(rect, text, size, width, bC, lines) {
 			context.fillStyle = "cyan";
 			context.shadowBlur = 0;
 			context.globalAlpha = .4;
-			context.fillRect(rec.p.x, rec.p.y, rec.width, rec.height);
+			context.fillRect(rec.p.x, rec.p.y, this.aLines[0].curLineSeries.last.x - rec.p.x, rec.height);
 		}
 			
 		if(this.blur)
@@ -391,7 +391,12 @@ function AnimText(text, slow, x, y, color1, color2, size) {
 	this.update = function() {
 		this.count += 1;
 		
-		if(this.count % this.slow == 0 && this.aText.length < this.text.length)
+		if(this.aText.length < this.text.length)
+		{
+			this.aText += this.sText[this.aText.length];
+			this.sText[this.aText.length - 1] = " ";
+		}
+		if(this.aText.length < this.text.length)
 		{
 			this.aText += this.sText[this.aText.length];
 			this.sText[this.aText.length - 1] = " ";
@@ -416,6 +421,8 @@ var tra = new Point(0,0);
 function AnimString() {
 	this.anims = new Array();
 	this.following = new Array();
+	this.targeting = new Array();
+	this.targets = new Array();
 	this.curAnim = 0;
 	
 	this.push = function(arg) {
@@ -432,19 +439,31 @@ function AnimString() {
 	
 	this.update = function() {
 		
-		if(this.following.indexOf(this.curAnim) >= 0)
+		if(this.following.indexOf(this.curAnim) >= 0 && this.anims[this.curAnim].done == false)
 		{
 			var lines = this.anims[this.curAnim].curLineSeries;
+			translationF.x = -(lines.last.x - window.innerWidth  / 2);
+			translationF.y = -(lines.last.y - window.innerHeight / 2);
+			follow = true;
+			followDone = false;
+		}
+		else if(this.targeting.indexOf(this.curAnim) >= 0 && this.anims[this.curAnim].done == false)
+		{
+			var ind = this.targeting.indexOf(this.curAnim);
+			translationF.x = -(this.targets[ind].x - window.innerWidth  / 2);
+			translationF.y = -(this.targets[ind].y - window.innerHeight / 2);
 			
-			curTrans.x = -(lines.last.x - window.innerWidth / 2);
-			curTrans.y = -(lines.last.y - window.innerHeight / 2);
-			translation = curTrans.copy();
+			follow = true;
+			followDone = false;
 		}
 		else {
-			test = false;
+			followDone = true;
 		}
 		
 		this.anims[this.curAnim].update();
+		for(var i = this.curAnim + 1; i < this.anims.length; i++)
+			this.anims[i].reset();
+		
 		if(this.anims[this.curAnim].done && this.curAnim < this.anims.length - 1)
 		{
 			this.curAnim += 1;
@@ -461,7 +480,11 @@ function AnimString() {
 	
 	this.follow = function() {
 		this.following[this.following.length] = this.anims.length - 1;
-		console.log(this);
+	}
+	
+	this.target = function(x, y) {
+		this.targeting[this.targeting.length] = this.anims.length - 1;
+		this.targets[this.targets.length] = new Point(x, y);
 	}
 	
 	this.reset = function() {
@@ -514,6 +537,7 @@ function init_canvas(){
 		
 		translationS.x = -(window.innerWidth) * (delta) / 2;
 		translationS.y = -(window.innerHeight) * (delta) / 2;
+		
 		console.log(delta);
 		
 		handleMouseMove(e);
@@ -534,6 +558,15 @@ var translation = new Point(0,0);
 var translationS = new Point(0,0);
 var translationF = new Point(0,0);
 
+
+var targetTranslation = new Point();
+
+var prevTrans = new Point(0,0);
+
+var maxTransO = Math.sqrt(1000);
+var follow = false;
+var followDone = true;
+
 function update() {
 	if(scale > 1)
 		shadowVal = shadowC / scale;
@@ -546,11 +579,45 @@ function update() {
 	context.fillStyle = "#0E0F0F";
 	context.fillRect(-100000,-100000,200000,200000);
 	
-	var traStart = new Point(curTrans.x, curTrans.y);
+	context.save();
+	var maxTrans = maxTransO / (scale * scale);
+	var followC = follow;
 	
+	//var traStart = new Point(-2700, 2200);
+	var traStart = new Point(translationF.x, translationF.y);
+	
+	
+	if((traStart.x - prevTrans.x) * (traStart.x - prevTrans.x) + (traStart.y - prevTrans.y) * (traStart.y - prevTrans.y) > maxTrans * maxTrans && follow)
+	{
+		var mag = Math.sqrt((traStart.x - prevTrans.x) * (traStart.x - prevTrans.x) + (traStart.y - prevTrans.y) * (traStart.y - prevTrans.y));
+		traStart = new Point((traStart.x - prevTrans.x) / mag * maxTrans + prevTrans.x, (traStart.y - prevTrans.y) / mag * maxTrans + prevTrans.y);
+		
+		
+	}
+	
+	if(follow && followDone && traStart.x == translationF.x && traStart.y == translationF.y)
+	{
+		follow = false;
+		translation = translationF.copy();
+		curTrans = translationF.copy();
+	}
+	
+	if(followC)
+		prevTrans = new Point(traStart.x, traStart.y);
+	else
+		prevTrans = new Point(curTrans.x, curTrans.y);
 	context.scale(scale, scale);
-	context.translate(traStart.x, traStart.y);
+	
+	if(!followC) {
+		context.translate(curTrans.x, curTrans.y);
+
+	}
+	else {
+		context.translate(traStart.x, traStart.y);
+	}
 	context.translate(translationS.x, translationS.y);
+
+
 
 	
 	
@@ -575,9 +642,7 @@ function update() {
 		aStrings[i].draw(context);
 	}	
 	
-	context.translate(-translationS.x, -translationS.y);
-	context.translate(-traStart.x, -traStart.y);
-	context.scale(1/scale, 1/scale);
+	context.restore();
 	
 	t = t + 1;
 	if(t % 5 == 0)
@@ -612,7 +677,7 @@ function drawGrid(context, color) {
 	context.shadowBlur = shadowVal;
 	
 	
-	for(var i = -5000; i < 5000; i+= 50 / Math.sqrt(scale))
+	for(var i = -10000; i < 10000; i+= 50 / Math.sqrt(scale))
 	{
 			context.beginPath();
 			context.moveTo(i, -10000);
@@ -902,7 +967,7 @@ function init(context) {
 	
 	var u = homeX / 10;
 	
-	var homeSelectRect = new ModuleRect(new Rect(new Point(6 * u, homeY - 5 * u), 8 * u, 5 * u, "cyan"), "", 15, 3, "cyan", 30);
+	var homeSelectRect = new ModuleRect(new Rect(new Point(6 * u, homeY - 5 * u), 8 * u, 5 * u, "cyan"), "", 15, 3, "cyan", 1500);
 	
 	var homeSelectText = setupText(readText("$#C_Home"), homeSelectRect.rect, W_COLOR, "black", 20, context)
 	
@@ -980,9 +1045,9 @@ function init(context) {
 	
 	//About Me
 	
-	var aboutSelectRect = new ModuleRect(new Rect(new Point(aboutX - 4 * u, homeY - 5 * u), 8 * u, 5 * u, "cyan"), "", 15, 3, "cyan", 30);
+	var aboutSelectRect = new ModuleRect(new Rect(new Point(aboutX - 4 * u, homeY - 5 * u), 8 * u, 5 * u, "cyan"), "", 15, 3, "cyan",  150);
 	
-	var aboutSelectText = setupText(readText("$#C_About Me"), aboutSelectRect.rect, W_COLOR, "black", 20, context)
+	var aboutSelectText = setupText(readText("$#C_About Me"), aboutSelectRect.rect, W_COLOR, "black", 20, context);
 	
 	var l4_ = new LineSeries(new Point(OX + 4 * homeX, OY + 5 * u));
 	l4_.next(40 * u, 0);
@@ -991,15 +1056,46 @@ function init(context) {
 	l4_.next(150 * u, -150 * u);
 	l4_.next(0, -100 * u);
 	
-	var l4 =  new AnimLineSeries(l4_, 800, W_COLOR, "cyan", 8, true);
+	var l4 =  new AnimLineSeries(l4_, 120, W_COLOR, "cyan", 8, true);
 	
 	var power3 = new AnimPowerBar(new Point(l4_.last.x - 10 * u, l4_.last.y - 78 * u), 20 * u, 2 * u, 60, 20, W_COLOR);
 	
+	var l5_ = new LineSeries(new Point(l4_.last.x, power3.p.y));
+	l5_.next(0, -2 * u);
+	l5_.next(4 * u, -4 * u);
+	l5_.next(20 * u, 0);
+	
+	var l5 =  new AnimLineSeries(l5_, 10, W_COLOR, "cyan", 8, true);
+	
+	var aboutDec = new ModuleRect(new Rect(new Point(l5_.last.x, l5_.last.y - 7.5 * u), 15 * u, 15 * u, "cyan"), "", 15, 3, "cyan",  30);
+	
+	var l6_ = new LineSeries(new Point(aboutDec.rect.p.x + aboutDec.rect.width, l5_.last.y));
+	l6_.next(20 * u, 0);
+	
+	var l6 =  new AnimLineSeries(l6_, 10, W_COLOR, "cyan", 8, true);
+	
+	var aboutT = new ModuleRect(new Rect(new Point(l6_.last.x, l6_.last.y - 7.5 * u), 40 * u, 15 * u, "cyan"), "", 15, 3, "cyan",  150);	
+	
+	var aboutTText = setupText(readText("$#C_About Me"), aboutT.rect, W_COLOR, "black", 30, context);
+	
+	var l7_ = new LineSeries(new Point(aboutDec.rect.p.x + aboutDec.rect.width / 2, aboutDec.rect.p.y + aboutDec.rect.height));
+	l7_.next(0, 5 * u);
+	l7_.next(2 * u, 2 * u);
+	l7_.next(10 * u, 0);
+	
+	var l7 =  new AnimLineSeries(l7_, 10, W_COLOR, "cyan", 8, true);
+	
+	var aboutC = new ModuleRect(new Rect(new Point(l7_.last.x, l7_.last.y - 5* u), 56 * u, 60 * u, "cyan"), "", 15, 3, "cyan",  150);	
+	
+	var aboutCText = setupText(readText("$!_Hello. My name is John Delaney. I am a second year computer engineering student at Boston University. I have worked on a wide range of projects ranging from mobile games to client-server architecture. I am interested in creating software that makes everyday life a little bit easier.$!_When I'm not working, I enjoy being a medicore chess player."), aboutC.rect, W_COLOR, "black", 30, context);
+	
 	var aS2 = new AnimString();
 	aS2.push(aboutSelectRect);
+	aS2.target(aboutSelectRect.rect.p.x, aboutSelectRect.rect.p.y);
 	aS2.pushText(aboutSelectText);
 	aS2.push(animLink[1]);
 	aS2.push(enc.copy());
+	aS2.target(enc.rect.p.x + enc.rect.width / 2, enc.rect.p.y + enc.rect.height / 2);
 	aS2.push(e2d1.copy());
 	aS2.push(e2d2.copy());
 	aS2.push(dec.copy());
@@ -1007,10 +1103,19 @@ function init(context) {
 	aS2.follow();
 	
 	aS2.push(power3);
-
+	aS2.target(power3.p.x + window.innerWidth / 2 - 2 * u, power3.p.y + window.innerHeight / 2 - homeY - 15 * u);
+	aS2.push(l5);
+	aS2.push(aboutDec);
+	aS2.push(l6);
+	aS2.push(aboutT);
+	aS2.pushText(aboutTText);
+	aS2.push(l7);
+	aS2.push(aboutC);
+	aS2.pushText(aboutCText);
 	
 	var aS3 = new AnimString();
 	aS3.push(animLink[2]);
+
 	
 	var aS4 = new AnimString();
 	aS4.push(animLink[3]);
@@ -1022,8 +1127,10 @@ var anc = new Point(0,0);
 var curTrans = new Point(0,0);
 
 function handleMouseDown(e) {
+	e = e
 	mouseDown = true;
 	anc = new Point(e.x, e.y);
+	
 }
 
 function handleMouseMove(e) {
@@ -1042,6 +1149,10 @@ function handleMouseUp(e) {
 
 function handleMouseOut(e) {
 	handleMouseUp(e);
+}
+
+function touchStart(e) {
+	touch1 = e.changedTocuhes[0];
 }
 
 
