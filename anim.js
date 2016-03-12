@@ -372,7 +372,7 @@ function AnimPowerBar(p, width, height, time, segments, color) {
 	
 }
 
-function AnimText(text, slow, x, y, color1, color2, size) {
+function AnimText(text, slow, x, y, color1, color2, size, width) {
 	this.text = text;
 	this.slow = slow;
 	this.x = x;
@@ -381,16 +381,39 @@ function AnimText(text, slow, x, y, color1, color2, size) {
 	this.color2 = color2;
 	this.size = size;
 	this.done = false;
+	this.width = width;
 	
 	
 	this.draw = function(context) {
-		drawText(context, this.sText, this.x, this.y, this.size, this.color1, false);
-		drawText(context, this.aText, this.x, this.y, this.size, this.color2, true);
+		
+		var xMin = -(translationS.x) - curTrans.x;
+		var xMax = (translationS.x) + window.innerWidth - curTrans.x;
+		var yMin = -(translationS.y) - curTrans.y;
+		var yMax = (translationS.y) + window.innerHeight - curTrans.y;
+		
+		if(((this.x > xMin && this.x < xMax) || (this.x + this.width > xMin && this.x + this.width < xMax)) && ((this.y > yMin && this.y < yMax) || (this.y + this.size > yMin && this.y + this.size < yMax)))
+		{
+			drawText(context, this.sText, this.x, this.y, this.size, this.color1, false);
+			drawText(context, this.aText, this.x, this.y, this.size, this.color2, true);
+		}
+		else{
+			
+		}
 	}
 	
 	this.update = function() {
 		this.count += 1;
 		
+		if(this.aText.length < this.text.length)
+		{
+			this.aText += this.sText[this.aText.length];
+			this.sText[this.aText.length - 1] = " ";
+		}
+		if(this.aText.length < this.text.length)
+		{
+			this.aText += this.sText[this.aText.length];
+			this.sText[this.aText.length - 1] = " ";
+		}
 		if(this.aText.length < this.text.length)
 		{
 			this.aText += this.sText[this.aText.length];
@@ -442,17 +465,18 @@ function AnimString() {
 		if(this.following.indexOf(this.curAnim) >= 0 && this.anims[this.curAnim].done == false)
 		{
 			var lines = this.anims[this.curAnim].curLineSeries;
-			translationF.x = -(lines.last.x - window.innerWidth  / 2);
-			translationF.y = -(lines.last.y - window.innerHeight / 2);
+			curTrans.x = -(lines.last.x - window.innerWidth  / 2);
+			curTrans.y = -(lines.last.y - window.innerHeight / 2);
+			translation = curTrans.copy();
 			follow = true;
 			followDone = false;
 		}
 		else if(this.targeting.indexOf(this.curAnim) >= 0 && this.anims[this.curAnim].done == false)
 		{
 			var ind = this.targeting.indexOf(this.curAnim);
-			translationF.x = -(this.targets[ind].x - window.innerWidth  / 2);
-			translationF.y = -(this.targets[ind].y - window.innerHeight / 2);
-			
+			curTrans.x = -(this.targets[ind].x - window.innerWidth  / 2);
+			curTrans.y = -(this.targets[ind].y - window.innerHeight / 2);
+			translation = curTrans.copy();
 			follow = true;
 			followDone = false;
 		}
@@ -555,10 +579,6 @@ var textIter;
 
 var translation = new Point(0,0);
 var translationS = new Point(0,0);
-var translationF = new Point(0,0);
-
-
-var targetTranslation = new Point();
 
 var prevTrans = new Point(0,0);
 
@@ -581,8 +601,8 @@ function update() {
 	context.save();
 	var maxTrans = maxTransO / (scale * scale);
 	var followC = follow;
-	
-	var traStart = new Point(translationF.x, translationF.y);
+
+	var traStart = new Point(curTrans.x, curTrans.y);
 
 	
 	if((traStart.x - prevTrans.x) * (traStart.x - prevTrans.x) + (traStart.y - prevTrans.y) * (traStart.y - prevTrans.y) > maxTrans * maxTrans && follow)
@@ -593,35 +613,24 @@ function update() {
 		
 	}
 	
-	if(follow && followDone && traStart.x == translationF.x && traStart.y == translationF.y)
+	if(follow && followDone && traStart.x == curTrans.x && traStart.y == curTrans.y)
 	{
 		follow = false;
-		translation = translationF.copy();
-		curTrans = translationF.copy();
 	}
 	
-	if(followC)
-		prevTrans = new Point(traStart.x, traStart.y);
-	else
-		prevTrans = new Point(curTrans.x, curTrans.y);
+
+	prevTrans = new Point(traStart.x, traStart.y);
+
 	context.scale(scale, scale);
 	
-	if(!followC) {
-		context.translate(curTrans.x, curTrans.y);
 
-	}
-	else {
-		context.translate(traStart.x, traStart.y);
-	}
+	context.translate(traStart.x, traStart.y);
 	context.translate(translationS.x, translationS.y);
 
-
-
-	
-	
 	context.shadowBlur = shadowVal;
 	
-	//drawGrid(context, 7);
+	if(window.innerWidth > 700)
+		drawGrid(context, 7);
 	
 	for(var i = 0; i < aStrings.length; i++)
 	{	
@@ -797,7 +806,6 @@ function setupText(text, rect, color1, color2, size, context)
 			
 			if(wW + curWidth > maxW)
 			{
-				//var homeText = new AnimText(txtt, 10, xLoc, powerY + 4 + size, W_COLOR, "black", size);
 				lines++;
 				curH += s;
 				var tWords = words.slice();
@@ -813,13 +821,13 @@ function setupText(text, rect, color1, color2, size, context)
 				
 				curWidth -= spaceW;
 				var xLoc;
-				//var xLoc = rect.p.x + (rect.width / 2) - (curWidth / 2);
+
 				if(!center)
 					xLoc = rect.p.x + rect.width / 16;
 				else 
 					xLoc = rect.p.x + (rect.width / 2) - (curWidth / 2);
 				
-				animArray[animArray.length] = new AnimText(lineT, 2, xLoc, curH + rect.p.y, color1, color2, s);
+				animArray[animArray.length] = new AnimText(lineT, 2, xLoc, curH + rect.p.y, color1, color2, s,  context.measureText(lineT).width);
 				
 				startI = i2;
 				curWidth = wW + spaceW;
@@ -847,7 +855,7 @@ function setupText(text, rect, color1, color2, size, context)
 				else 
 					xLoc = rect.p.x + (rect.width / 2) - (curWidth / 2);
 				
-			animArray[animArray.length] = new AnimText(lineT, 1, xLoc, curH + rect.p.y, color1, color2, s);
+			animArray[animArray.length] = new AnimText(lineT, 1, xLoc, curH + rect.p.y, color1, color2, s, context.measureText(lineT).width);
 			startI = 0;
 			
 		}	
@@ -1090,7 +1098,7 @@ function init(context) {
 	
 	var aboutC = new ModuleRect(new Rect(new Point(l7_.last.x, l7_.last.y - 5* u), 56 * u, 60 * u, "cyan"), "", 15, 3, "cyan",  150);	
 	
-	var aboutCText = setupText(readText("$!_Hello. My name is John Delaney. I am a second year computer engineering student at Boston University. I have worked on a wide range of projects ranging from mobile games to client-server architecture. I am interested in creating software that makes everyday life a little bit easier.$!_When I'm not working, I enjoy being a medicore chess player."), aboutC.rect, W_COLOR, "black", 30, context);
+	var aboutCText = setupText(readText("$!_I am a second year computer engineering student at Boston University.$_My primary interests are in software development. I have worked on a wide range of projects ranging from mobile games to desktop client-server programs. I am interested in creating software that makes everyday life a little bit easier.$_I code in a wide variety of languages including:$!_*Java, Java EE$!_*C, C++$!_*Javascript, HTML$!_*Python, MySQL"), aboutC.rect, W_COLOR, "black", 30, context);
 	
 	var aS2 = new AnimString();
 	aS2.push(aboutSelectRect);
