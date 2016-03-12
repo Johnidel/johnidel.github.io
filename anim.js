@@ -1172,12 +1172,14 @@ function touchMove(e) {
 		e2 = e.changedTouches[1];
 		var d = (e1.clientX - e2.clientX) * (e1.clientX - e2.clientX) + (e1.clientY - e2.clientY) + (e1.clientY - e2.clientY);
 		
-		if(d - touchDist > 20)
+		if(d - touchDist > 10)
 		{
 			scale += .05;
+			touchDist = d;
 		}
-		else if(d - touchDist < -20){
+		else if(d - touchDist < -10){
 			scale -= .05;
+			touchDist = d;
 		}
 		
 		if(scale < .05)
