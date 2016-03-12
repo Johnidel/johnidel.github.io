@@ -587,6 +587,8 @@ var follow = false;
 var followDone = true;
 
 function update() {
+	
+
 	if(scale > 1)
 		shadowVal = shadowC / scale;
 	else {
@@ -639,15 +641,13 @@ function update() {
 			//916
 			aStrings[i].update();
 		}
-		else {
-			aStrings[i].reset();
-		}
 	}
-	
+
 	for(var i = 0; i < aStrings.length; i++)
 	{
 		aStrings[i].draw(context);
 	}	
+
 	
 	context.restore();
 	
