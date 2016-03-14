@@ -113,7 +113,6 @@ function ModuleRect(rect, text, size, width, bC, lines) {
 			
 		if(this.blur)
 		{
-			//context.globalAlpha = 1;
 			context.shadowBlur = shadowVal;
 			context.shadowColor = this.blurColor;
 		}
@@ -393,7 +392,7 @@ function AnimText(text, slow, x, y, color1, color2, size, width) {
 		
 		if(((this.x > xMin && this.x < xMax) || (this.x + this.width > xMin && this.x + this.width < xMax)) && ((this.y > yMin && this.y < yMax) || (this.y + this.size > yMin && this.y + this.size < yMax)))
 		{
-			drawText(context, this.sText, this.x, this.y, this.size, this.color1, false);
+			//drawText(context, this.sText, this.x, this.y, this.size, this.color1, false);
 			drawText(context, this.aText, this.x, this.y, this.size, this.color2, true);
 		}
 		else{
@@ -601,7 +600,7 @@ function update() {
 	context.fillRect(-100000,-100000,200000,200000);
 	
 	context.save();
-	var maxTrans = maxTransO / (scale * scale);
+	var maxTrans = maxTransO / (scale);
 	var followC = follow;
 
 	var traStart = new Point(curTrans.x, curTrans.y);
@@ -970,7 +969,7 @@ function init(context) {
 	var e2d1 = new AnimLineSeries(e2d1_, 20, W_COLOR, "cyan", 8, true);
 	var e2d2 = new AnimLineSeries(e2d2_, 20, W_COLOR, "cyan", 8, true);**/
 	
-	var declines = 4;
+	var declines = 25;
 	
 	var OX = homeX;
 	var s = 0;
@@ -1124,12 +1123,101 @@ function init(context) {
 	aS2.push(aboutC);
 	aS2.pushText(aboutCText);
 	
+	//PROJECTS
+	
+	var projectSelectRect = new ModuleRect(new Rect(new Point(projectX - 4 * u, homeY - 5 * u), 8 * u, 5 * u, "cyan"), "", 15, 3, "cyan",  150);
+	
+	var projectSelectText = setupText(readText("$#C_Projects"), projectSelectRect.rect, W_COLOR, "black", 20, context);
+	
+	var l10_ = new LineSeries(new Point(OX + 4 * homeX, OY + 14 * u));
+	l10_.next(20 * u, 0);
+	l10_.next(100 * u, 100 * u);
+	l10_.next(0, 80 * u);
+	l10_.next(4 * u, 4 * u);
+	l10_.next(4 * u, 0);
+	l10_.next(4 * u, -4 * u);
+	l10_.next(0, -2 * u);
+	
+	var l10 =  new AnimLineSeries(l10_, 80, W_COLOR, "cyan", LINE_WIDTH, true);
+	
+	var power5 = new AnimPowerBar(new Point(l10_.last.x - 6 * u, l10_.last.y - 49 * u), 12 * u, 1 * u, 60, 25, W_COLOR);
+	
 	var aS3 = new AnimString();
+	aS3.push(projectSelectRect);
+	aS3.target(projectSelectRect.rect.p.x + projectSelectRect.rect.width / 2, projectSelectRect.rect.p.y + projectSelectRect.rect.height / 2);
+	aS3.pushText(projectSelectText);
 	aS3.push(animLink[2]);
+	aS3.push(enc.copy());
+	aS3.target(enc.rect.p.x + enc.rect.width / 2, enc.rect.p.y + enc.rect.height / 2);
+	aS3.push(e2d1.copy());
+	aS3.push(e2d2.copy());
+	aS3.push(dec.copy());
+	aS3.push(l10);
+	aS3.follow();
+	aS3.push(power5);
+	aS3.target(power5.p.x + window.innerWidth / 2 - 4 * u, power5.p.y + window.innerHeight / 2 - homeY - 15 * u);
+	
 
 	
+	
+	
+	
+	
+	
+	//CONTACT
+	
+	var contactSelectRect = new ModuleRect(new Rect(new Point(contactX - 4 * u, homeY - 5 * u), 8 * u, 5 * u, "cyan"), "", 15, 3, "cyan",  150);
+	
+	var contactSelectText = setupText(readText("$#C_Contact"), contactSelectRect.rect, W_COLOR, "black", 20, context);
+	
+	
+	var l8_ = new LineSeries(new Point(OX + 4 * homeX, OY + 23 * u));
+	l8_.next(10 * u, 0);
+	l8_.next(2 * u, 2 * u);
+	l8_.next(0, 40 * u);
+	l8_.next(-4 * u, 4 * u);
+	l8_.next(-40 * u, 40 * u);
+	l8_.next(-40 * u, 0);
+	l8_.next(-2 * u, 2 * u);
+	l8_.next(0, 25 * u);
+	l8_.next(2 * u, 2 * u);
+	l8_.next(10 * u, 0);
+	l8_.next(2 * u, -2 * u);
+	l8_.next(0, -2 * u);
+	
+	
+	
+	var l9_ = new LineSeries(new Point(l8_.last.x, l8_.last.y - 9 * u));
+	l9_.next(0, -2 * u);
+	l9_.next(2* u, -2 * u);
+	l9_.next(5* u, 0);
+	
+	var l8 =  new AnimLineSeries(l8_, 80, W_COLOR, "cyan", LINE_WIDTH, true);
+	var l9 =  new AnimLineSeries(l9_, 10, W_COLOR, "cyan", LINE_WIDTH, true);
+	
+	var power4 = new AnimPowerBar(new Point(l8_.last.x - 5 * u, l8_.last.y - 9 * u), 10 * u, 1 * u, 60, 5, W_COLOR);
+	
+	var contactT = new ModuleRect(new Rect(new Point(l9_.last.x, l9_.last.y - 7.5 * u), 40 * u, 15 * u, "cyan"), "", 15, 3, "cyan",  150);	
+	
+	var contactText = setupText(readText("$#C_-------$#C_Coming Soon$#C_-------"), contactT.rect, W_COLOR, "black", 30, context);
+	
 	var aS4 = new AnimString();
+	aS4.push(contactSelectRect);
+	aS4.target(contactSelectRect.rect.p.x + contactSelectRect.rect.width / 2, contactSelectRect.rect.p.y + contactSelectRect.rect.height / 2);
+	aS4.pushText(contactSelectText);
 	aS4.push(animLink[3]);
+	aS4.push(enc.copy());
+	aS4.target(enc.rect.p.x + enc.rect.width / 2, enc.rect.p.y + enc.rect.height / 2);
+	aS4.push(e2d1.copy());
+	aS4.push(e2d2.copy());
+	aS4.push(dec.copy());
+	aS4.push(l8);
+	aS4.follow();
+	aS4.push(power4);
+	aS4.push(l9);
+	aS4.target(contactT.rect.p.x + contactT.rect.width / 2, contactT.rect.p.y + contactT.rect.height / 2);
+	aS4.push(contactT);
+	aS4.pushText(contactText);
 	
 	aStrings = [aS1, aS2, aS3, aS4];
 }
@@ -1147,7 +1235,6 @@ function handleMouseMove(e) {
 	if(mouseDown)
 	{
 		curTrans = new Point(translation.x + 1 / scale * (e.x - anc.x), translation.y + 1 / scale * (e.y - anc.y));
-		console.log(e);
 	}
 	
 }
@@ -1170,6 +1257,7 @@ function touchStart(e) {
 }
 var touchScroll = false;
 var touchDist = 0;
+
 function touchMove(e) {
 	e1 = e.changedTouches[0];
 	if(mouseDown && e.changedTouches.length == 1)
