@@ -597,7 +597,7 @@ var followDone = true;
 
 function update() {
 	
-
+	console.log("hello firefox");
 	if(scale > 1)
 		shadowVal = shadowC / scale;
 	else {
