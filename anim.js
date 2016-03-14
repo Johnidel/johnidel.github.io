@@ -1240,14 +1240,14 @@ var curTrans = new Point(0,0);
 
 function handleMouseDown(e) {
 	mouseDown = true;
-	anc = new Point(e.x, e.y);
+	anc = new Point(e.clientX, e.clientY);
 	
 }
 
 function handleMouseMove(e) {
-	if(mouseDown)
+	if(mouseDown && !follow)
 	{
-		curTrans = new Point(translation.x + 1 / scale * (e.x - anc.x), translation.y + 1 / scale * (e.y - anc.y));
+		curTrans = new Point(translation.x + 1 / scale * (e.clientX - anc.x), translation.y + 1 / scale * (e.clientY - anc.y));
 	}
 	
 }
