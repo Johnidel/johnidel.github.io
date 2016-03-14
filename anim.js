@@ -599,7 +599,6 @@ var followDone = true;
 
 function update() {
 	
-	console.log("hello firefox");
 	if(scale > 1)
 		shadowVal = shadowC / scale;
 	else {
@@ -620,16 +619,14 @@ function update() {
 	var traStart = new Point(curTrans.x, curTrans.y);
 
 	
-	if((traStart.x - prevTrans.x) * (traStart.x - prevTrans.x) + (traStart.y - prevTrans.y) * (traStart.y - prevTrans.y) > maxTrans * maxTrans && follow)
-	{
+	if((traStart.x - prevTrans.x) * (traStart.x - prevTrans.x) + (traStart.y - prevTrans.y) * (traStart.y - prevTrans.y) > maxTrans * maxTrans && follow) {
 		var mag = Math.sqrt((traStart.x - prevTrans.x) * (traStart.x - prevTrans.x) + (traStart.y - prevTrans.y) * (traStart.y - prevTrans.y));
 		traStart = new Point((traStart.x - prevTrans.x) / mag * maxTrans + prevTrans.x, (traStart.y - prevTrans.y) / mag * maxTrans + prevTrans.y);
 		
 		
 	}
 	
-	if(follow && followDone && traStart.x == curTrans.x && traStart.y == curTrans.y)
-	{
+	if(follow && followDone && traStart.x == curTrans.x && traStart.y == curTrans.y) {
 		follow = false;
 	}
 	
@@ -647,8 +644,7 @@ function update() {
 	if(window.innerWidth > 700)
 		drawGrid(context, 7);
 	
-	for(var i = 0; i < aStrings.length; i++)
-	{	
+	for(var i = 0; i < aStrings.length; i++) {	
 		if(animSelect == i + 1)
 		{
 			//916
@@ -656,8 +652,7 @@ function update() {
 		}
 	}
 
-	for(var i = 0; i < aStrings.length; i++)
-	{
+	for(var i = 0; i < aStrings.length; i++) {
 		aStrings[i].draw(context);
 	}	
 
@@ -665,10 +660,8 @@ function update() {
 	context.restore();
 	
 	t = t + 1;
-	if(t % 5 == 0)
-	{
-		if(shadowC < 50 && shadowDir == 0)
-		{
+	if(t % 5 == 0) {
+		if(shadowC < 50 && shadowDir == 0) {
 			shadowC += 2;
 			if(shadowC == 50)
 				shadowDir = 1;
@@ -680,8 +673,7 @@ function update() {
 		}
 	}
 	
-	if(window.innerHeight > window.innerWidth)
-	{
+	if(window.innerHeight > window.innerWidth) {
 		shadowC = 0;
 	}
 	
@@ -697,8 +689,7 @@ function drawGrid(context, color) {
 	context.shadowBlur = shadowVal;
 	
 	context.beginPath();
-	for(var i = -10000; i < 10000; i+= 50 / Math.sqrt(scale))
-	{
+	for(var i = -10000; i < 10000; i+= 50 / Math.sqrt(scale)) {
 			context.moveTo(Math.round(i), -10000);
 			context.lineTo(Math.round(i), 10000);
 			context.moveTo(-10000, Math.round(i));
@@ -711,8 +702,7 @@ function drawGrid(context, color) {
 
 function drawText(context, text, x, y, size, color, high)
 {
-	if(!high)
-	{
+	if(!high) {
 		context.globalAlpha = .4;
 		context.shadowBlur = 0;
 	}	
@@ -743,14 +733,11 @@ function drawLineSeries(context, series, color, width, blur) {
 
 	context.beginPath();
 	context.moveTo(Math.round(series.p[0].x), Math.round(series.p[0].y));
-	for(i = 1; i < series.length; i++)
-	{
+	for(i = 1; i < series.length; i++) {
 		context.lineTo(Math.round(series.p[i].x), Math.round(series.p[i].y));
 	}
 	context.strokeStyle = color;
-	if(blur)
-	{
-		
+	if(blur){
 		context.shadowBlur = shadowVal;
 		context.shadowColor = color;
 		context.globalAlpha = 1;
@@ -784,52 +771,41 @@ function setupText(text, rect, color1, color2, size, context)
 	
 	
 	var s = size;
-	for(var i = 0; i < text.length; i++)
-	{
+	for(var i = 0; i < text.length; i++) {
 		curWidth = 0;
 		var firstChar = text[i].substring(0, text[i].indexOf("_"));
 		var rest = text[i].substring(text[i].indexOf("_") + 1, text[i].length);
 		var words = rest.split(" ");
 		
 		
-		if(firstChar.indexOf("#") >= 0)
-		{
+		if(firstChar.indexOf("#") >= 0) {
 			s = size * 2.5;
 		}
-		if(firstChar.indexOf("!") >= 0)
-		{
+		if(firstChar.indexOf("!") >= 0) {
 			words.splice(0,0,"     ");
 			s = size;
 		}
-		if(firstChar.indexOf("C") >= 0)
-		{
+		if(firstChar.indexOf("C") >= 0) {
 			center = true;
 		}
 		context.font = "Bolder " + s + "px Lucida Console";
 		var spaceW = context.measureText(" ").width;
-		for(var i2 = 0; i2 < words.length; i2++)
-		{
+		for(var i2 = 0; i2 < words.length; i2++) {
 			
 			var wW = context.measureText(words[i2]).width;
-			if(wW > maxW)
-			{
+			if(wW > maxW) {
 				fits = false;
 				break;
-				
 			}
 			
-			if(wW + curWidth > maxW)
-			{
+			if(wW + curWidth > maxW){
 				lines++;
 				curH += s;
 				var tWords = words.slice();
-				
 				var line = tWords.splice(startI, i2 - startI);
-				
 				var lineT = "";
 				
-				for(var inc = 0; inc < line.length; inc++)
-				{
+				for(var inc = 0; inc < line.length; inc++) {
 					lineT += line[inc] + " ";
 				}
 				
@@ -852,11 +828,9 @@ function setupText(text, rect, color1, color2, size, context)
 		}
 		var tWords = words.slice();
 		var last = tWords.splice(startI, words.length - startI);
-		if(last.length != 0)
-		{
+		if(last.length != 0) {
 			var lineT = "";
-			for(var inc = 0; inc < last.length; inc++)
-			{
+			for(var inc = 0; inc < last.length; inc++) {
 				lineT += last[inc] + " ";
 			}
 				
@@ -865,9 +839,9 @@ function setupText(text, rect, color1, color2, size, context)
 			curWidth -= spaceW;
 			var xLoc;
 			if(!center)
-					xLoc = rect.p.x + rect.width / 16;
-				else 
-					xLoc = rect.p.x + (rect.width / 2) - (curWidth / 2);
+				xLoc = rect.p.x + rect.width / 16;
+			else 
+				xLoc = rect.p.x + (rect.width / 2) - (curWidth / 2);
 				
 			animArray[animArray.length] = new AnimText(lineT, 1, xLoc, curH + rect.p.y, color1, color2, s, context.measureText(lineT).width);
 			startI = 0;
@@ -899,8 +873,7 @@ function init(context) {
 	//Needed to not break when height gets very small, hard to 45 angles at this points
 	//Lesser of the 2 evils is to overflow off screen and let user pan
 	//Ata certain point you can't be sympatetic for people operating at these resolutions
-	if(window.innerHeight < 610)
-	{
+	if(window.innerHeight < 610) {
 		xUnit = window.innerWidth / 100;
 		yUnit = window.innerHeight / 100 ;
 	}
@@ -913,8 +886,7 @@ function init(context) {
 	
 	var LINE_WIDTH = 8;
 	
-	if(window.innerWidth < 700)
-	{
+	if(window.innerWidth < 700) {
 		LINE_WIDTH = 3;
 	}
 
@@ -1063,8 +1035,7 @@ function init(context) {
 	aS1.push(l3);
 	aS1.push(homeRect);
 	
-	for(var i = 0; i < homeText.length; i++)
-	{
+	for(var i = 0; i < homeText.length; i++) {
 		aS1.push(homeText[i]);
 	}
 	
@@ -1243,22 +1214,16 @@ var curTrans = new Point(0,0);
 function handleMouseDown(e) {
 	mouseDown = true;
 	anc = new Point(e.clientX, e.clientY);
-	console.log(e);
-	
 }
 
 function handleMouseMove(e) {
-	if(mouseDown && !follow)
-	{
+	if(mouseDown && !follow) 
 		curTrans = new Point(translation.x + 1 / scale * (e.clientX - anc.x), translation.y + 1 / scale * (e.clientY - anc.y));
-	}
-	
 }
 
 function handleMouseUp(e) {
 	mouseDown = false;
 	translation = curTrans.copy();
-
 }
 
 function handleMouseOut(e) {
@@ -1276,24 +1241,20 @@ var touchDist = 0;
 
 function touchMove(e) {
 	e1 = e.changedTouches[0];
-	if(mouseDown && e.changedTouches.length == 1)
-	{	
+	if(mouseDown && e.changedTouches.length == 1) {	
 		curTrans = new Point(translation.x + 1 / scale * (e1.clientX - anc.x), translation.y + 1 / scale * (e1.clientY - anc.y));
 	}
-	else if(e.changedTouches.length == 2 && !touchScroll)
-	{
+	else if(e.changedTouches.length == 2 && !touchScroll) {
 		touchScroll = true;
 		e2 = e.changedTouches[1];
 		var d = (e1.clientX - e2.clientX) * (e1.clientX - e2.clientX) + (e1.clientY - e2.clientY) + (e1.clientY - e2.clientY);
 		touchDist = d;
 	}
-	else if(e.changedTouches.length == 2)
-	{
+	else if(e.changedTouches.length == 2) {
 		e2 = e.changedTouches[1];
 		var d = (e1.clientX - e2.clientX) * (e1.clientX - e2.clientX) + (e1.clientY - e2.clientY) + (e1.clientY - e2.clientY);
 		
-		if(d - touchDist > 10)
-		{
+		if(d - touchDist > 10) {
 			scale += .05;
 			touchDist = d;
 		}
@@ -1319,7 +1280,7 @@ function touchEnd(e) {
 	translation = curTrans.copy();
 }
 
-/**
+/**Very slow
 var throt;
 window.addEventListener("resize", function() {
 	if(!throt) {
