@@ -319,7 +319,7 @@ function AnimPowerBar(p, width, height, time, segments, color) {
 		
 		
 	}
-	
+	/**
 	this.reset = function() {
 		this.done = false;
 
@@ -340,8 +340,18 @@ function AnimPowerBar(p, width, height, time, segments, color) {
 				this.rects[0].height = 0;
 			}
 		}
-		
-		
+	}**/
+	
+	this.reset = function() {
+		this.rects = new Array();
+		for(var i = 0; i < this.segments; i++)
+		{
+			this.rects[i + 1] = new Rect(new Point(this.p.x, this.p.y + i * this.height * 2), this.width, this.height, this.color);
+		}
+		this.rects[0] = new Rect(new Point(this.p.x, this.p.y + (this.segments - 1) * this.height * 2 + this.height), this.width, 0, "cyan");
+		this.incy = this.height / this.segTime; 
+		this.done = false;	
+		this.curSeg = this.segments;
 	}
 	
 	this.draw = function(context) {
