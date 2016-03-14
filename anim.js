@@ -1241,6 +1241,7 @@ var curTrans = new Point(0,0);
 function handleMouseDown(e) {
 	mouseDown = true;
 	anc = new Point(e.clientX, e.clientY);
+	console.log(e);
 	
 }
 
