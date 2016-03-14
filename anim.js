@@ -124,7 +124,7 @@ function ModuleRect(rect, text, size, width, bC, lines) {
 		context.strokeStyle = this.rect.color;
 		context.lineWidth = this.width;
 		
-		context.strokeRect(rec.p.x, rec.p.y, rec.width, rec.height);
+		context.strokeRect(Math.round(rec.p.x), Math.round(rec.p.y), Math.round(rec.width), Math.round(rec.height));
 		context.font = this.size + "px Lucida Console";
 		
 		drawText(context, this.text, rec.p.x + (rec.width / 2) - (context.measureText(this.text).width / 2), rec.p.y + this.size + 10, this.size, W_COLOR);
@@ -369,14 +369,14 @@ function AnimPowerBar(p, width, height, time, segments, color) {
 				context.globalAlpha = .4;
 				context.shadowBlur = 0;
 			}
-			context.fillRect(rec.p.x, rec.p.y, rec.width, rec.height);
+			context.fillRect(Math.round(rec.p.x), Math.round(rec.p.y), Math.round(rec.width), Math.round(rec.height));
 		}
 		context.globalAlpha = 1;
 		context.shadowBlur = shadowVal;
 		context.shadowColor = "cyan";
 		var rec = this.rects[0];
 		context.fillStyle = rec.color;
-		context.fillRect(rec.p.x, rec.p.y, rec.width, rec.height);
+		context.fillRect(Math.round(rec.p.x), Math.round(rec.p.y), Math.round(rec.width), Math.round(rec.height));
 	}
 	
 }
@@ -697,10 +697,10 @@ function drawGrid(context, color) {
 	context.beginPath();
 	for(var i = -10000; i < 10000; i+= 50 / Math.sqrt(scale))
 	{
-			context.moveTo(i, -10000);
-			context.lineTo(i, 10000);
-			context.moveTo(-10000, i);
-			context.lineTo(10000, i);
+			context.moveTo(Math.round(i), -10000);
+			context.lineTo(Math.round(i), 10000);
+			context.moveTo(-10000, Math.round(i));
+			context.lineTo(10000, Math.round(i));
 	}
 	
 	context.stroke();
@@ -720,29 +720,30 @@ function drawText(context, text, x, y, size, color, high)
 	}
 	context.font = "Bolder " + size + "px Lucida Console";
 	context.fillStyle = color;
-	context.fillText(text, x, y);
+	context.fillText(text, Math.round(x), Math.round(y));
+	/**
 	context.globalAlpha = .1;
 	context.strokeStyle = "cyan";
 	context.lineWidth = 2;
-	context.strokeText(text, x, y);
+	context.strokeText(text, Math.round(x), Math.round(y));**/
 }
 
 function drawLine(context, line) {
 	context.beginPath();
 	context.moveTo(line.p1.x, line.p1.y);
-    context.lineTo(line.p2.x, line.p2.y);
+	 context.lineTo(line.p2.x, line.p2.y);
 	context.strokeStyle = "white";
 	context.lineWidth = 5;
-    context.stroke();
+	 context.stroke();
 }
 
 function drawLineSeries(context, series, color, width, blur) {
 
 	context.beginPath();
-	context.moveTo(series.p[0].x, series.p[0].y);
+	context.moveTo(Math.round(series.p[0].x), Math.round(series.p[0].y));
 	for(i = 1; i < series.length; i++)
 	{
-		context.lineTo(series.p[i].x, series.p[i].y);
+		context.lineTo(Math.round(series.p[i].x), Math.round(series.p[i].y));
 	}
 	context.strokeStyle = color;
 	if(blur)
