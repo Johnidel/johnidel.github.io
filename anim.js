@@ -125,9 +125,11 @@ function ModuleRect(rect, text, size, width, bC, lines) {
 		context.lineWidth = this.width;
 		
 		context.strokeRect(Math.round(rec.p.x), Math.round(rec.p.y), Math.round(rec.width), Math.round(rec.height));
-		context.font = this.size + "px Lucida Console";
 		
+		if(this.text.length > 0) {
+		context.font = this.size + "px Lucida Console";
 		drawText(context, this.text, rec.p.x + (rec.width / 2) - (context.measureText(this.text).width / 2), rec.p.y + this.size + 10, this.size, W_COLOR);
+		}
 	}
 	
 	this.update = function () {
