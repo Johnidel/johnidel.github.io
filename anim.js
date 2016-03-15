@@ -405,7 +405,8 @@ function AnimText(text, slow, x, y, color1, color2, size, width) {
 		if(((this.x > xMin && this.x < xMax) || (this.x + this.width > xMin && this.x + this.width < xMax)) && ((this.y > yMin && this.y < yMax) || (this.y + this.size > yMin && this.y + this.size < yMax)))
 		{
 			//drawText(context, this.sText, this.x, this.y, this.size, this.color1, false);
-			drawText(context, this.aText, this.x, this.y, this.size, this.color2, true);
+			if(this.aText.length > 0)
+				drawText(context, this.aText, this.x, this.y, this.size, this.color2, true);
 		}
 		else{
 			
@@ -415,28 +416,16 @@ function AnimText(text, slow, x, y, color1, color2, size, width) {
 	this.update = function() {
 		this.count += 1;
 		
-		if(this.aText.length < this.text.length)
-		{
-			this.aText += this.sText[this.aText.length];
-			this.sText[this.aText.length - 1] = " ";
+		for(var i = 0; i < 4; i++) {
+			if(this.aText.length < this.text.length) {
+				this.aText += this.sText[this.aText.length];
+				this.sText[this.aText.length - 1] = " "; 
+			}
+			else {
+				this.done = true;
+				break;
+			}
 		}
-		if(this.aText.length < this.text.length)
-		{
-			this.aText += this.sText[this.aText.length];
-			this.sText[this.aText.length - 1] = " ";
-		}
-		if(this.aText.length < this.text.length)
-		{
-			this.aText += this.sText[this.aText.length];
-			this.sText[this.aText.length - 1] = " ";
-		}
-		if(this.aText.length < this.text.length)
-		{
-			this.aText += this.sText[this.aText.length];
-			this.sText[this.aText.length - 1] = " ";
-		}
-		if(this.aText.length == this.sText.length)
-			this.done = true;
 	}
 	
 	this.reset = function() {
@@ -596,6 +585,9 @@ var prevTrans = new Point(0,0);
 var maxTransO = Math.sqrt(1000);
 var follow = false;
 var followDone = true;
+var imageAlpha = .4;
+var imageInc = 0;
+var imageDir = 0;
 
 function update() {
 	
@@ -604,8 +596,6 @@ function update() {
 	else {
 		shadowVal = shadowC * scale;
 	}
-	//Override shadows(laggy)
-	shadowVal = 0;
 	var canvas = document.getElementById('main_canvas');
 	var context = canvas.getContext('2d');
 	context.globalAlpha = 1;
@@ -613,7 +603,9 @@ function update() {
 	context.fillRect(-100000,-100000,200000,200000);
 	
 	context.save();
-	var maxTrans = maxTransO / (scale);
+	var maxTrans = maxTransO;
+	if(scale < 1)
+		maxTrans = maxTrans / scale;
 	var followC = follow;
 
 	var traStart = new Point(curTrans.x, curTrans.y);
@@ -655,7 +647,54 @@ function update() {
 	for(var i = 0; i < aStrings.length; i++) {
 		aStrings[i].draw(context);
 	}	
-
+	
+	
+	//Needs to be cleaned up
+	//TODO: Subclass Module Rect to hold images/slideshows instead of text, possibly both
+	var imgInc = imageInc % images211.length;
+	context.globalAlpha = imageAlpha;
+	if(project1Image.done) {
+		if(images211Rect.width / images211[imgInc].width < images211Rect.height / images211[imgInc].height) {
+			var ratio = images211Rect.width / images211[imgInc].width;
+			context.drawImage(images211[imgInc], images211Rect.p.x + (images211Rect.width - ratio * .9 * images211[imgInc].width) / 2, images211Rect.p.y, ratio * .9 * images211[imgInc].width, ratio * .9 * images211[imgInc].height);
+			context.rect(images211Rect.p.x + (images211Rect.width - ratio * .9 * images211[imgInc].width) / 2, images211Rect.p.y, ratio * .9 * images211[imgInc].width, ratio * .9 * images211[imgInc].height);
+			context.strokeStyle = "black";
+			context.stroke();
+		}
+		else {
+			var ratio = images211Rect.height / images211[imgInc].height;
+			context.drawImage(images211[imgInc], images211Rect.p.x + (images211Rect.width - ratio * .9 * images211[imgInc].width) / 2, images211Rect.p.y + ratio * .05 * images211[imgInc].height, ratio * .9 * images211[imgInc].width, ratio * .9 * images211[imgInc].height);
+			context.rect(images211Rect.p.x + (images211Rect.width - ratio * .9 * images211[imgInc].width) / 2, images211Rect.p.y + ratio * .05 * images211[imgInc].height, ratio * .9 * images211[imgInc].width, ratio * .9 * images211[imgInc].height);
+			context.strokeStyle = "black";
+			context.stroke();
+		}
+	}
+	else {
+		imageAlpha = .4;
+	}
+	
+	imgInc = imageInc % imagesChick.length;
+	if(project2Image.done) {
+		if(imagesChickRect.width / imagesChick[imgInc].width < imagesChickRect.height / imagesChick[imgInc].height) {
+			var ratio = imagesChickRect.width / imagesChick[imgInc].width;
+			context.drawImage(imagesChick[imgInc], imagesChickRect.p.x + (imagesChickRect.width - ratio * .9 * imagesChick[imgInc].width) / 2, imagesChickRect.p.y, ratio * .9 * imagesChick[imgInc].width, ratio * .9 * imagesChick[imgInc].height);
+			context.rect(imagesChickRect.p.x + (imagesChickRect.width - ratio * .9 * imagesChick[imgInc].width) / 2, imagesChickRect.p.y, ratio * .9 * imagesChick[imgInc].width, ratio * .9 * imagesChick[imgInc].height);
+			context.strokeStyle = "black";
+			context.stroke();
+		}
+		else {
+			var ratio = imagesChickRect.height / imagesChick[imgInc].height;
+			context.drawImage(imagesChick[imgInc], imagesChickRect.p.x + (imagesChickRect.width - ratio * .9 * imagesChick[imgInc].width) / 2, imagesChickRect.p.y + ratio * .05 * imagesChick[imgInc].height, ratio * .9 * imagesChick[imgInc].width, ratio * .9 * imagesChick[imgInc].height);
+			context.rect(imagesChickRect.p.x + (imagesChickRect.width - ratio * .9 * imagesChick[imgInc].width) / 2, imagesChickRect.p.y + ratio * .05 * imagesChick[imgInc].height, ratio * .9 * imagesChick[imgInc].width, ratio * .9 * imagesChick[imgInc].height);
+			context.strokeStyle = "black";
+			context.stroke();
+		}
+	}
+	else {
+		imageAlpha = .4;
+	}
+	
+	
 	
 	context.restore();
 	
@@ -670,6 +709,21 @@ function update() {
 			shadowC -= 2;
 			if(shadowC == 10)
 				shadowDir = 0;
+		}
+		
+		if(imageDir == 0) {
+			imageAlpha += .02;
+			if(imageAlpha > 1) {
+				imageDir = 1;
+				imageAlpha = 1;
+			}
+		}
+		else {
+			imageAlpha -= .02;
+			if(imageAlpha < .75) {
+				imageDir = 0;
+				imageInc += 1;
+			}
 		}
 	}
 	
@@ -760,7 +814,7 @@ function readText(str) {
 function setupText(text, rect, color1, color2, size, context)
 {
 	animArray = new Array();
-	var maxH = rect.height;
+	var maxH = rect.height * 14/16;;
 	var maxW = rect.width * 14/16;
 	var lines = 0; 
 	var curWidth = 0;
@@ -781,13 +835,18 @@ function setupText(text, rect, color1, color2, size, context)
 		if(firstChar.indexOf("#") >= 0) {
 			s = size * 2.5;
 		}
+		else {
+			s = size;
+		}
 		if(firstChar.indexOf("!") >= 0) {
 			words.splice(0,0,"     ");
-			s = size;
+			
 		}
 		if(firstChar.indexOf("C") >= 0) {
 			center = true;
 		}
+		else 
+			center = false;
 		context.font = "Bolder " + s + "px Lucida Console";
 		var spaceW = context.measureText(" ").width;
 		for(var i2 = 0; i2 < words.length; i2++) {
@@ -856,11 +915,11 @@ function setupText(text, rect, color1, color2, size, context)
 }
 
 var shadowVal, shadowDir, shadowC, animSelect;
-var inAnim;
-
 var mouseDown;
-
 var aStrings;
+var images211;
+var images211Rect;
+var project1Image, project2Image;
 
 function init(context) {
 	
@@ -873,10 +932,6 @@ function init(context) {
 	//Needed to not break when height gets very small, hard to 45 angles at this points
 	//Lesser of the 2 evils is to overflow off screen and let user pan
 	//Ata certain point you can't be sympatetic for people operating at these resolutions
-	if(window.innerHeight < 610) {
-		xUnit = window.innerWidth / 100;
-		yUnit = window.innerHeight / 100 ;
-	}
 	
 	shadowC = 20;
 	shadowDir = 0;
@@ -889,7 +944,6 @@ function init(context) {
 	if(window.innerWidth < 700) {
 		LINE_WIDTH = 3;
 	}
-
 	
 	var homeSeries = new LineSeries(new Point(homeX, homeY));
 	homeSeries.append(new Point(homeX, homeY + 3 * homeX));
@@ -905,7 +959,6 @@ function init(context) {
 	aboutSeries.append(new Point(homeX + .2 * homeX, homeY + .9 * homeX));
 	aboutSeries.append(new Point(homeX + .2 * homeX, homeY + 3 * homeX));
 
-	
 	var projectRect = document.getElementById("projects").getBoundingClientRect();
 	var projectX = (projectRect.left + projectRect.width / 2);
 
@@ -915,7 +968,6 @@ function init(context) {
 	projectSeries.append(new Point(homeX + .8 * homeX, homeY + 1.0 * homeX));
 	projectSeries.append(new Point(homeX + .5 * homeX, homeY + 1.3 * homeX));
 	projectSeries.append(new Point(homeX + .5 * homeX, homeY + 3 * homeX));
-
 
 	var contactRect = document.getElementById("contact").getBoundingClientRect();
 	var contactX = (contactRect.left + contactRect.width / 2);
@@ -931,7 +983,6 @@ function init(context) {
 	contactSeries.append(new Point(homeX + .8 * homeX, homeY + 1.5 * homeX));
 	contactSeries.append(new Point(homeX + .8 * homeX, homeY + 3 * homeX));
 
-
 	var animLink = [
 		new AnimLineSeries(homeSeries, 20, W_COLOR, "cyan", LINE_WIDTH, true),
 		new AnimLineSeries(aboutSeries, 20, W_COLOR, "cyan", LINE_WIDTH, true),
@@ -940,22 +991,7 @@ function init(context) {
 	];
 
 	//BEGIN HOME
-	
 	animSelect = 0;
-	
-	/**
-	var s = 2.2955 * homeX;
-	var enc = new ModuleRect(new Rect(new Point(2.2955 * homeX, 40 * yUnit), 10 * xUnit, 40 * yUnit, "cyan"), "", 15, 3, "cyan", 30);
-	var dec = new ModuleRect(new Rect(new Point(2.2955 * homeX + 25 * xUnit, 40 * yUnit), 10 * xUnit, 40 * yUnit, "cyan"), "", 15, 3, "cyan", 30);
-	
-	var e2d1_ = new LineSeries(new Point(s + 10 * xUnit, 50 * yUnit));
-	e2d1_.append(new Point(s + 25 * xUnit, 50 * yUnit));
-	var e2d2_ = new LineSeries(new Point(s + 10 * xUnit,70 * yUnit));
-	e2d2_.append(new Point(s + 25 * xUnit, 70 * yUnit));
-	
-	var e2d1 = new AnimLineSeries(e2d1_, 20, W_COLOR, "cyan", 8, true);
-	var e2d2 = new AnimLineSeries(e2d2_, 20, W_COLOR, "cyan", 8, true);**/
-	
 	var declines = 25;
 	
 	var OX = homeX;
@@ -1015,24 +1051,28 @@ function init(context) {
 	
 	var homeRect = new ModuleRect(new Rect(new Point(l3_.last.x - 20 * u, l3_.last.y), 40 * u, 40 * u, "cyan"), "", 15, 3, "cyan", 300);
 	
-	var contents = "$#_Home$_ $!_Welcome, feel free to pan the camera around and explore!$_Make use of zoom if something isnt on the screen.$_ $_Click the buttons and the \"circuit\" will take you there.";
+	var contents = "$#_Home$_ $!_Welcome, click and drag to pan the camera around.$_Make use of zoom if something is too small or not on the screen.$_ $_Click the navbar and the \"circuit\" will take you there.";
 
 	contents = readText(contents);
 	homeText = setupText(contents, homeRect.rect, W_COLOR, "black", 20, context);
 
 	var aS1 = new AnimString();
 	aS1.push(homeSelectRect);
+	aS1.target(homeSelectRect.rect.p.x, homeSelectRect.rect.p.y);
 	aS1.pushText(homeSelectText);
 	aS1.push(animLink[0]);
 	aS1.push(enc);
+	aS1.target(enc.rect.p.x + enc.rect.width / 2, enc.rect.p.y + enc.rect.height / 2);
 	aS1.push(e2d1);
 	aS1.push(e2d2);
 	aS1.push(dec);
 	aS1.push(l1);
+	aS1.follow();
 	aS1.push(power);
 	aS1.push(l2);
 	aS1.push(power2);
 	aS1.push(l3);
+	aS1.target(homeRect.rect.p.x, homeRect.rect.p.y);
 	aS1.push(homeRect);
 	
 	for(var i = 0; i < homeText.length; i++) {
@@ -1040,7 +1080,6 @@ function init(context) {
 	}
 	
 	//About Me
-	
 	var aboutSelectRect = new ModuleRect(new Rect(new Point(aboutX - 4 * u, homeY - 5 * u), 8 * u, 5 * u, "cyan"), "", 15, 3, "cyan",  150);
 	
 	var aboutSelectText = setupText(readText("$#C_About Me"), aboutSelectRect.rect, W_COLOR, "black", 20, context);
@@ -1110,7 +1149,6 @@ function init(context) {
 	aS2.pushText(aboutCText);
 	
 	//PROJECTS
-	
 	var projectSelectRect = new ModuleRect(new Rect(new Point(projectX - 4 * u, homeY - 5 * u), 8 * u, 5 * u, "cyan"), "", 15, 3, "cyan",  150);
 	
 	var projectSelectText = setupText(readText("$#C_Projects"), projectSelectRect.rect, W_COLOR, "black", 20, context);
@@ -1128,6 +1166,73 @@ function init(context) {
 	
 	var power5 = new AnimPowerBar(new Point(l10_.last.x - 6 * u, l10_.last.y - 49 * u), 12 * u, 1 * u, 60, 25, W_COLOR);
 	
+	var l11_ = new LineSeries(new Point(l10_.last.x, power5.p.y));
+	l11_.next(0, -2 * u);
+	l11_.next(2 * u, -2 * u);
+	l11_.next(10 * u, 0);
+	
+	var l11 =  new AnimLineSeries(l11_, 10, W_COLOR, "cyan", LINE_WIDTH, true);
+	
+	var projectDec = new ModuleRect(new Rect(new Point(l11_.last.x, l11_.last.y - 6 * u), 20 * u, 12 * u, "cyan"), "", 15, 3, "cyan",  30);
+	
+	var l12_ = new LineSeries(new Point(projectDec.rect.p.x + projectDec.rect.width, l11_.last.y));
+	l12_.next(5 * u, 0);
+	
+	var l12 =  new AnimLineSeries(l12_, 10, W_COLOR, "cyan", LINE_WIDTH, true);
+	
+	var projectT = new ModuleRect(new Rect(new Point(l12_.last.x, l12_.last.y - 8 * u), 35 * u, 16 * u, "cyan"), "", 15, 3, "cyan",  150);
+	var projectTText = setupText(readText("$#C_Projects$_$_Here are a couple programs I have made."), projectT.rect, W_COLOR, "white", 20, context);
+	
+	//P1
+	var l13_ = new LineSeries(new Point(projectDec.rect.p.x + projectDec.rect.width / 3, projectDec.rect.p.y + projectDec.rect.height + LINE_WIDTH / 3));
+	l13_.next(0, 10 * u);
+	l13_.next(2 * u, 2 * u);
+	l13_.next(3 * u, 0);
+	
+	var l13 =  new AnimLineSeries(l13_, 10, W_COLOR, "cyan", LINE_WIDTH, true);
+	
+	
+	project1Image = new ModuleRect(new Rect(new Point(l13_.last.x, l13_.last.y - 4 * u), 62 * u, 30 * u, "cyan"), "", 15, 3, "cyan",  150);
+	
+	var l14_ = new LineSeries(new Point(project1Image.rect.p.x + project1Image.rect.width / 3, project1Image.rect.p.y + project1Image.rect.height));
+	l14_.next(0, 5 * u);
+	
+	var l15_ = new LineSeries(new Point(project1Image.rect.p.x + project1Image.rect.width * 2 / 3, project1Image.rect.p.y + project1Image.rect.height));
+	l15_.next(0, 5 * u);
+	
+	var l14 =  new AnimLineSeries(l14_, 10, W_COLOR, "cyan", LINE_WIDTH, true);
+	var l15 =  new AnimLineSeries(l15_, 10, W_COLOR, "cyan", LINE_WIDTH, true);
+	
+	var project1Rect = new ModuleRect(new Rect(new Point(project1Image.rect.p.x, l14_.last.y), 62 * u, 45 * u, "cyan"), "", 15, 3, "cyan",  150);
+	var project1Text = setupText(readText("$#C_211$_$!_211 is a 2D puzle game written in Python using Pygame. The goal of the game is to evade guards and acquire gold bars. The game features real-time 2D ray-tracing to generate apropriate fields of vision for each of the entities. It is done by projecting and sorting a series of lines to each entity and computing the intersection with the other entities. After being radially sorted, the lines into an irregular polygon that can be used to give pinpoint field of vision. The game also utilizes A* Pathfinding to allow for the AI to naviagate around corners. The largest challenge in this project was optimization, Pygame is an older library whose performance needed was lackluster when drawing complex polygons and blurred lighting.$!_All of the code for this project is available through the GitHub link below."), project1Rect.rect, W_COLOR, "white", 30, context);
+	
+	//P2
+	var l16_ = new LineSeries(new Point(projectDec.rect.p.x + projectDec.rect.width * 2/ 3, projectDec.rect.p.y + projectDec.rect.height + LINE_WIDTH / 3));
+	l16_.next(0, 2 * u);
+	l16_.next(2 * u, 2 * u);
+	l16_.next(80 * u, 0);
+	l16_.next(2 * u, 2 * u);
+	l16_.next(0, 4 * u);
+	l16_.next(2 * u, 2 * u);
+	l16_.next(4 * u, 0);
+	
+	var l16 =  new AnimLineSeries(l16_, 10, W_COLOR, "cyan", LINE_WIDTH, true);
+	
+	
+	project2Image = new ModuleRect(new Rect(new Point(l16_.last.x, l16_.last.y - 4 * u), 62 * u, 30 * u, "cyan"), "", 15, 3, "cyan",  150);
+	
+	var l17_ = new LineSeries(new Point(project2Image.rect.p.x + project2Image.rect.width / 3, project2Image.rect.p.y + project2Image.rect.height));
+	l17_.next(0, 5 * u);
+	
+	var l18_ = new LineSeries(new Point(project2Image.rect.p.x + project2Image.rect.width * 2 / 3, project2Image.rect.p.y + project2Image.rect.height));
+	l18_.next(0, 5 * u);
+	
+	var l17 =  new AnimLineSeries(l17_, 10, W_COLOR, "cyan", LINE_WIDTH, true);
+	var l18 =  new AnimLineSeries(l18_, 10, W_COLOR, "cyan", LINE_WIDTH, true);
+	
+	var project2Rect = new ModuleRect(new Rect(new Point(project2Image.rect.p.x, l17_.last.y), 62 * u, 45 * u, "cyan"), "", 15, 3, "cyan",  150);
+	var project2Text = setupText(readText("$#C_Chicken Fingers$_$!_This was a small app made for iOS and Android to test out a cross-platform Java library named LibGDX. The app is written in Java using OpenGL to render the graphics. The particle system implementation was extremely slow using the library's supplied functions, so it was rewritten using an OpenGL vertex shader and fragment shader, and moved mainly to the GPU."), project2Rect.rect, W_COLOR, "white", 30, context);
+	
 	var aS3 = new AnimString();
 	aS3.push(projectSelectRect);
 	aS3.target(projectSelectRect.rect.p.x + projectSelectRect.rect.width / 2, projectSelectRect.rect.p.y + projectSelectRect.rect.height / 2);
@@ -1142,20 +1247,52 @@ function init(context) {
 	aS3.follow();
 	aS3.push(power5);
 	aS3.target(power5.p.x + window.innerWidth / 2 - 4 * u, power5.p.y + window.innerHeight / 2 - homeY - 15 * u);
+	aS3.push(l11);
+	aS3.push(projectDec);
+	aS3.push(l12);
+	aS3.push(projectT);
+	aS3.pushText(projectTText);
+	aS3.push(l13);
+	aS3.push(project1Image);
+	aS3.push(l14);
+	aS3.push(l15);
+	aS3.push(project1Rect);
+	aS3.pushText(project1Text);
 	
-
+	aS3.push(l16);
+	aS3.push(project2Image);
+	aS3.push(l17);
+	aS3.push(l18);
+	aS3.push(project2Rect);
+	aS3.pushText(project2Text);
+	
+	images211 = [
+		new Image(),
+		new Image(),
+		new Image(),
+		new Image()];
+		
+	images211[0].src = "img/body0.png";
+	images211[1].src = "img/body1.png";
+	images211[2].src = "img/body2.png";
+	images211[3].src = "img/body3.png";
+	
+	imagesChick = [
+		new Image(),
+		new Image()
+	]
+	
+	imagesChick[0].src = "img/chick0.png";
+	imagesChick[1].src = "img/chick1.png";
 	
 	
-	
-	
-	
+	images211Rect = new Rect(new Point(l13_.last.x, l13_.last.y - 4 * u), 62 * u, 30 * u, "cyan");
+	imagesChickRect = new Rect(new Point(l16_.last.x, l16_.last.y - 4 * u), 62 * u, 30 * u, "cyan");
 	
 	//CONTACT
-	
 	var contactSelectRect = new ModuleRect(new Rect(new Point(contactX - 4 * u, homeY - 5 * u), 8 * u, 5 * u, "cyan"), "", 15, 3, "cyan",  150);
 	
 	var contactSelectText = setupText(readText("$#C_Contact"), contactSelectRect.rect, W_COLOR, "black", 20, context);
-	
 	
 	var l8_ = new LineSeries(new Point(OX + 4 * homeX, OY + 23 * u));
 	l8_.next(10 * u, 0);
@@ -1170,8 +1307,6 @@ function init(context) {
 	l8_.next(10 * u, 0);
 	l8_.next(2 * u, -2 * u);
 	l8_.next(0, -2 * u);
-	
-	
 	
 	var l9_ = new LineSeries(new Point(l8_.last.x, l8_.last.y - 9 * u));
 	l9_.next(0, -2 * u);
