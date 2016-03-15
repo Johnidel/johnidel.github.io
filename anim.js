@@ -402,15 +402,10 @@ function AnimText(text, slow, x, y, color1, color2, size, width) {
 		var yMin = -(translationS.y) - curTrans.y;
 		var yMax = (translationS.y) + window.innerHeight - curTrans.y;
 		
-		if(((this.x > xMin && this.x < xMax) || (this.x + this.width > xMin && this.x + this.width < xMax)) && ((this.y > yMin && this.y < yMax) || (this.y + this.size > yMin && this.y + this.size < yMax)))
-		{
 			//drawText(context, this.sText, this.x, this.y, this.size, this.color1, false);
 			if(this.aText.length > 0)
 				drawText(context, this.aText, this.x, this.y, this.size, this.color2, true);
-		}
-		else{
-			
-		}
+		
 	}
 	
 	this.update = function() {
