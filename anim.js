@@ -591,6 +591,9 @@ function update() {
 	else {
 		shadowVal = shadowC * scale;
 	}
+	
+	//Override shadows
+	shadowVal = 0;
 	var canvas = document.getElementById('main_canvas');
 	var context = canvas.getContext('2d');
 	context.globalAlpha = 1;
