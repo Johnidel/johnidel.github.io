@@ -1,87 +1,52 @@
-<!DOCTYPE html>
 <html>
-	<head>
-		<!--Angular -->
-		<script src = "http://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
-		<script src = "http://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular-animate.js"></script>
-		
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-		<script src="https://d3js.org/d3.v4.min.js"></script>
-		
-		
-		<link href="css/odometer-theme-default.css" rel="stylesheet">
-		<script src="js/odometer.min.js"></script>
-		
-		<script src="http://static.redsift.io/reusable/d3-rs-tip/latest/d3-rs-tip.umd-es2015.min.js"></script>
-		
-		<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,700'rel='stylesheet' type='text/css'>
-		<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
-		
-		<link href="css/drip.css" rel="stylesheet">
-		<script src="js/drip.js"></script>
-	</head>
-	
-	<body ng-app="myApp" ng-controller="totalCtrl">
-		
-		<div class="top">
-			<h1>
-				Drip Portfolio Growth
-			</h1>
-			The performace of our portfolio over the last 90+ years.
-		</div>
-		
-		<div id="form" class="form" ng-controller="formCtrl">
-		
-			<div class="floatInp">
-				<label ng-class="{'cd-label': true, 'float-label': data.principal != null}">Original Investment</label>
-				<i class="fa fa-usd cd-input-icon"></i>
-				<input id="initial" type="number" class="money" ng-model="data.principal"></input>
-			</div>
-			
-			<div class="floatInp">
-				<label ng-class="{'cd-label': true, 'float-label': data.increment != null}">Annual Contribution</label>
-				<i class="fa fa-usd cd-input-icon"></i>
-				<input id="increment" type="number" class="money" ng-model="data.increment"></input>
-			</div>
-				
-			<div class="dropDown floatInp">
-				<label ng-class="{'cd-label': true, 'float-label': data.year != null}">Starting Year</label>
-				<i class="fa fa-calendar cd-input-icon"></i>
-				<div class="dropDown-display" ng-click="dropClicked()" ng-bind-html="data.tYear">Hi</div>
-				<div class="dropDown-table">
-					<div ng-click="data.year = option; trustYear()" ng-repeat-start="option in data.years" ng-show="((option - 1928) / 8) + ((option - 1928) % 8) <= data.dropCount - 1" class="yearButton fade">{{option}}</div>
-					<div class="clearfix" ng-if="$index%8 == 7"></div>
-					<div ng-repeat-end=""></div>
-				</div>
-			</div>
-			<div class="clearfix"></div>
-				
-			<div class="floatInp">
-				<label ng-class="{'cd-label': true, 'float-label': data.yearRange != null}">Number of Years</label>
-				<i class="fa fa-calendar cd-input-icon"></i>
-				<input id="yearRange" type="number" class="yearRange" ng-model="data.yearRange"></input>
-			</div>
-			
-			<div class="submit" ng-click="clicked()">Generate</div>
-			
-			<div class="metrics">
-				<div>
-					Final value of investment: {{data.princip}}
-					<div style="clear: left;"></div>$
-					<div id="odometer" class="odometer od-cust" ng-bind-html="data.gain"></div>
-					
-				</div>
-				<br/>
-				<div>
-					Return on Investment: 
-					<div style="clear: left;"></div>
-					<div id="odometer" class="odometer od-cust" ng-bind-html="data.rot"></div>%
-				</div>
-			</div>
-		</div>
-		<div id="graph" class="graphs">
-		</div>
-		
-		
-	</body>
+<head>
+
+<link rel="stylesheet" type="text/css" href="style.css">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta charset="UTF-8">
+</head>
+
+<body onload="init_canvas();">
+<div class="wrap">
+	<div id="top" class="page-top">
+		<div id="title" class="title">John Ivan Delaney</div>
+		<nav id="page-nav">
+			<ul>
+				<li> <div class="nav-button" id="home" href="mailto:johnidel127@gmail.com?subject=subject&body=body">Home</div></li>
+				<li> <div class="nav-button" id="about"> About Me</div></li>
+				<li> <div class="nav-button" id="projects"> Projects</div></li>
+				<li> <div class="nav-button" id="contact"> Contact</div></li>
+			</ul>
+		</nav>
+	</div>
+<canvas id="main_canvas" style="padding:0; margin: 0;position:absolute;cursor:all-scroll;";></canvas>
+
+
+
+<script src="anim.js"></script>
+
+<div id="foot" class="footer">
+<div class="foot-ele"> 
+	Email <div class="content">johnidel @bu.edu</div>
+</div>
+<div class="foot-ele"> 
+	Around The Web 
+	<div class="content">
+		<a href="https://github.com/Johnidel"><img id="git" src="img/GitHub-Mark-32px.png"></a>
+		<a href="https://www.linkedin.com/in/john-delaney-663374113"><img src="img/Logo-2CRev-21px-TM.png"></a>
+	</div>
+</div>
+<div class="foot-ele"> 
+	Thanks <div class="content">Github Pages</div>
+</div>
+<div style="z-index: 0;display:none;">
+
+</div>
+</div>
+</div>
+
+
+
+</body>
 </html>
