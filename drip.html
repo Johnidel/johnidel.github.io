@@ -49,7 +49,7 @@
 				<i class="fa fa-calendar cd-input-icon"></i>
 				<div class="dropDown-display" ng-click="dropClicked()" ng-bind-html="data.tYear">Hi</div>
 				<div class="dropDown-table">
-					<div ng-click="data.year = option; trustYear()" ng-repeat-start="option in data.years" ng-show="((option - 1928) / 8) + ((option - 1928) % 8) <= data.dropCount - 1" class="yearButton fade">{{option}}</div>
+					<div ng-click="data.year = option; trustYear()" ng-repeat-start="option in data.years" ng-show="((option - 1928) / 7) + ((option - 1928) % 7) <= data.dropCount - 1" class="yearButton fade">{{option}}</div>
 					<div class="clearfix" ng-if="$index%7 == 6"></div>
 					<div ng-repeat-end=""></div>
 				</div>
