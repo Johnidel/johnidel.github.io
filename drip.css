@@ -1,0 +1,301 @@
+body {
+	background-color: #B9EAFA;
+	height: 100%;
+	width: 100%;
+	font-family: "Open Sans";
+	display: inline-block;
+	background: url("C:/Users/xbox/drip/img/simp.jpg") no-repeat scroll center top transparent; 
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+	overflow: hidden;
+
+}
+
+.top {
+	text-align: center;
+	background-color: rgba(0,0,0,.4);
+	width: 50%;
+	margin: 30px auto;
+	color: #ddd;
+	padding: 16px;
+	background-image: url("http://www.plectrumadvisers.com/img/dripicon.png");
+	background-repeat: no-repeat;
+	background-size: 5%;
+	background-position: 20% center;
+	border-radius: 25px;
+}
+
+.top p {
+	
+}
+
+h1 {
+	font-family: "Open Sans";
+	color: #ccc;
+	text-align: center;
+	width: 50%;
+	margin: auto;
+	border-radius: 10px;
+}
+
+.line {
+	display: block;
+	text-align: center;
+	padding: 10px;
+}
+
+.form {
+	padding-left: 2%;
+	max-width: 47%;
+	float: left;
+}
+.graphs {
+	float: left;
+	padding-left: 10%;
+	padding-right: 2%;
+	width: 47%;
+	min-height: 20%;
+	color: white;
+}
+
+input {
+}
+
+.year {
+	-webkit-transition: linear 300ms;
+}
+
+#gen {
+	background-color: blue;
+	color: white;
+}
+
+.graphic {
+	background-color: rgba(255,255,255, .98);
+	box-shadow: 1px 1px 2px black;
+}
+
+.axis {
+	padding-left:300px !important;
+}
+
+.axis text {
+	fill: #606060;
+}
+
+.axis path {
+	stroke-width: .5px;
+	stroke: #606060;
+	
+}
+
+.axis line {
+	stroke-width: .5px;
+	stroke: #606060;
+}
+
+.od-cust {
+	font-size: 40px;
+}
+
+.form {
+	width: 30%;
+}
+
+.form input[type="text"],
+.form input[type="number"],
+.dropDown-display {
+  display: block;
+  margin: 32px 0px 32px 0px;
+  width: calc(100% - 56px);
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -ms-appearance: none;
+  -o-appearance: none;
+  appearance: none;
+}
+.form input[type="text"],
+.form input[type="number"],
+.dropDown-display{
+  /* general style for input elements */
+  padding: 12px;
+  border: 1px solid #cfd9db;
+  background-color: #ffffff;
+  border-radius: .25em;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.08);
+  padding-left: 56px !important;
+}
+.form input[type="text"]:focus,
+.form input[type="number"]:focus,
+.dropDown-display{
+  outline: none;
+  border-color: #2c97de;
+  box-shadow: 0 0 5px rgba(44, 151, 222, 0.2);
+}
+
+.form .submit {
+  /* button style */
+  border: none;
+  background: #1699C4;
+  border-radius: .25em;
+  padding: 16px 20px;
+  color: #ffffff;
+  font-weight: bold;
+  width: 100%;
+  text-align: center;
+  cursor: pointer;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -ms-appearance: none;
+  -o-appearance: none;
+  appearance: none;
+}
+
+.form .submit:hover {
+  background: #42a2e1;
+}
+.form .submit:focus {
+  outline: none;
+  background: #2b3e51;
+}
+.form .submit:active {
+  -webkit-transform: scale(0.9);
+  -moz-transform: scale(0.9);
+  -ms-transform: scale(0.9);
+  -o-transform: scale(0.9);
+  transform: scale(0.9);
+}
+
+
+.floatInp {
+	position: relative;
+}
+
+.form .floatInp .cd-label {
+	position: absolute;
+    top: 8px;
+    left: 56px;
+    font-size: 1.2rem;
+	pointer-events: none;
+	z-index: 9999;
+	-webkit-transition: top 0.2s, left 0.2s, font-size 0.2s;
+}
+
+.form .floatInp .cd-input-icon {
+	font-size: 1.6rem;
+	color: #ccc;
+	position: absolute;
+    top: 8px;
+    left: 16px;
+	z-index: 9999;
+}
+
+.form .floatInp .float-label{
+	
+    top: -20px !important;
+	font-size: 1rem;
+	left: 0px;
+	color: white;
+}
+
+.clearfix:after {
+     visibility: hidden;
+     display: block;
+     font-size: 0;
+     content: " ";
+     clear: both;
+     height: 0;
+     }
+.clearfix { display: inline-block; }
+/* start commented backslash hack \*/
+* html .clearfix { height: 1%; }
+.clearfix { display: block; }
+/* close commented backslash hack */
+
+.dropDown {
+	width: 100%;
+	margin: 32px 0px 32px 0px;
+	transition: height .3s ease-in-out;
+}
+
+.dropDown-display {
+	margin-bottom: 2px !important;
+	min-height: 15px;
+	font: 13.3333px Arial;
+}
+
+.yearButton {
+	float: left;
+	background-color: white;
+	margin: 2px;
+	padding: 6px;
+	border-radius: 6px;
+	width: 9.6%;
+	text-align: center;
+
+}
+
+.fade.ng-hide {
+  opacity: 0;
+}
+
+.fade.ng-hide-remove,
+.fade.ng-hide-add {
+  display: block !important;
+}
+
+.fade.ng-hide-remove {
+  transition: all linear 1000ms;
+}
+
+.fade.ng-hide-add {
+  transition: all linear 500ms;
+}
+
+.clearBelow{
+	margin-bottom: 64px;
+	background-color: red !important;
+}
+
+.metrics {
+	text-align: center;
+	background-color: rgba(0,0,0,.4);
+	width: 50%;
+	margin: 30px auto;
+	color: #ddd;
+	padding: 16px;
+	border-radius: 25px;
+}
+
+.darkTip {
+	font-family: "Open Sans" !important;
+	background-color: rgba(0,0,0,.8) !important;
+}
+
+
+@keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* Firefox < 16 */
+@-moz-keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* Safari, Chrome and Opera > 12.1 */
+@-webkit-keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@-webkit-keyframes fadeout {
+    from { opacity: 1; }
+    to   { opacity: 0; }
+}
+
