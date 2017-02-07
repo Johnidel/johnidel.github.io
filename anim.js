@@ -1120,7 +1120,7 @@ function init(context) {
 	
 	var aboutC = new ModuleRect(new Rect(new Point(l7_.last.x, l7_.last.y - 5* u), 56 * u, 60 * u, "cyan"), "", 15, 3, "cyan",  150);	
 	
-	var aboutCText = setupText(readText("$!_I am a second year computer engineering student at Boston University.$_My primary interests are in software development. I have worked on a wide range of projects ranging from mobile games to desktop client-server software. I am interested in creating software that makes everyday life a little bit easier.$_I code in a wide variety of languages including:$!_*Java, Java EE$!_*C, C++$!_*Javascript, HTML$!_*Python, MySQL"), aboutC.rect, W_COLOR, "black", 30, context);
+	var aboutCText = setupText(readText("$!_I am a third year Computer Engineering student at Boston University.$_My primary interests are in software development. I have worked on a wide range of projects ranging from mobile games to desktop client-server software. I am interested in creating software that makes everyday life a little bit easier.$_I code in a wide variety of languages including:$!_*Java, Java EE$!_*C, C++$!_*Javascript, HTML$!_*Python, MySQL"), aboutC.rect, W_COLOR, "black", 30, context);
 	
 	var aS2 = new AnimString();
 	aS2.push(aboutSelectRect);
