@@ -141,7 +141,7 @@ div.page-top nav#page-nav ul li:hover div.nav-button:hover:after{
 div.footer{
 	padding-left: 12.5%;
 	margin: 0;
-	min-width: 87.5%;
+	min-width: 100%;
 	min-height:15%;
 	position:absolute;
 	bottom: 0;
